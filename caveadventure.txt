@@ -1,0 +1,7 @@
+"caveadventure"
+{
+	"base"		"base"
+	"title"		"Cave Adventure"
+	"category"	"pve"
+	"menusystem"	"1"
+}
