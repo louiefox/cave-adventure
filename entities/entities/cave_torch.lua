@@ -9,7 +9,7 @@ function ENT:Initialize()
 	if( SERVER ) then
 		self:SetModel( "models/props_medieval/torch.mdl" )
 		self:PhysicsInit( SOLID_VPHYSICS )
-		self:SetMoveType( MOVETYPE_VPHYSICS )
+		self:SetMoveType( MOVETYPE_NONE )
 		self:SetSolid( SOLID_VPHYSICS )
 	end
 end

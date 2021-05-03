@@ -1,0 +1,1 @@
+CAVEADVENTURE.TEMP.Monsters = CAVEADVENTURE.TEMP.Monsters or {}

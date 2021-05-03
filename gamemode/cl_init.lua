@@ -2,7 +2,7 @@
 include( "shared.lua" )
 
 -- CLIENT LOAD --
---include( "cl_bshadows.lua" )
+include( "cl_monsters.lua" )
 
 -- VGUI LOAD --
 for k, v in pairs( file.Find( GM.FolderName .. "/gamemode/vgui/*.lua", "LUA" ) ) do

@@ -3,11 +3,11 @@ AddCSLuaFile()
 ENT.Base = "base_gmodentity"
 
 function ENT:Initialize()
-	if ( SERVER ) then
+	if( SERVER ) then
 		self:SetModel( "models/hunter/plates/plate3x4.mdl" )
 		self:SetMaterial( "models/props_pipes/GutterMetal01a" )
 		self:PhysicsInit( SOLID_VPHYSICS )
-		self:SetMoveType( MOVETYPE_VPHYSICS )
+		self:SetMoveType( MOVETYPE_NONE )
 		self:SetSolid( SOLID_VPHYSICS )
 	end
 end

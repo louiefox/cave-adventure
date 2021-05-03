@@ -118,8 +118,9 @@ local room_meta = {
 
         self.NavArea = navmesh.CreateNavArea( self.Floor:GetPos()+Vector( CAVE.GRID.RoomSize/2, CAVE.GRID.RoomSize/2, 0 ), self.Floor:GetPos()-Vector( CAVE.GRID.RoomSize/2, CAVE.GRID.RoomSize/2, 0 ) )
 
-        local zombie = ents.Create( "npc_zombie" )
+        local zombie = ents.Create( "cave_monster_zombie" )
         zombie:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
+        zombie:SetInitMonsterClass( "zombie" )
         zombie:Spawn()
     end,
     SetSpawnRoom = function( self )
