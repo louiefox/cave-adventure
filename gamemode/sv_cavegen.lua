@@ -5,6 +5,14 @@ local room_meta = {
         self.Floor:Remove()
         self.Ceiling:Remove()
 
+        if( IsValid( self.SpawnPos ) ) then
+            self.SpawnPos:Remove() 
+        end
+
+        if( self.NavArea ) then
+            self.NavArea:Remove() 
+        end
+
         for k, v in ipairs( self.Walls ) do
             if( not IsValid( v ) ) then
                 for key, val in pairs( v ) do
@@ -29,7 +37,7 @@ local room_meta = {
 
         local wallEnts = {}
 
-        local wall1 = ents.Create( "prop_physics" )
+        local wall1 = ents.Create( "cave_building" )
         wall1:SetModel( "models/hunter/plates/plate4x4.mdl" )
         wall1:SetMaterial( "cave_adventure/rock_wall" )
         wall1:SetPos( pos+right*166 )
@@ -37,7 +45,7 @@ local room_meta = {
         wall1:Spawn()
         wallEnts.Wall1 = wall1
 
-        local wall2 = ents.Create( "prop_physics" )
+        local wall2 = ents.Create( "cave_building" )
         wall2:SetModel( "models/hunter/plates/plate4x4.mdl" )
         wall2:SetMaterial( "cave_adventure/rock_wall" )
         wall2:SetPos( pos-right*166 )
@@ -45,7 +53,7 @@ local room_meta = {
         wall2:Spawn()
         wallEnts.Wall2 = wall2
 
-        local wall3 = ents.Create( "prop_physics" )
+        local wall3 = ents.Create( "cave_building" )
         wall3:SetModel( "models/hunter/plates/plate3x4.mdl" )
         wall3:SetMaterial( "cave_adventure/rock_wall" )
         wall3:SetPos( pos+Vector( 0, 0, 120 ) )
@@ -90,6 +98,11 @@ local room_meta = {
             self.Walls[wallKey].Torch2 = torch2
         end
     end,
+    Think = function( self )
+        if( self.NavArea ) then
+            self.NavArea:Draw()
+        end
+    end,
     Generate = function( self )
         for i = 1, 4 do
             local axis = ((i == 1 or i == 3) and "X") or ((i == 2 or i == 4) and "Y")
@@ -102,9 +115,20 @@ local room_meta = {
 
             self:AddDoorWay( i )
         end
+
+        self.NavArea = navmesh.CreateNavArea( self.Floor:GetPos()+Vector( CAVE.GRID.RoomSize/2, CAVE.GRID.RoomSize/2, 0 ), self.Floor:GetPos()-Vector( CAVE.GRID.RoomSize/2, CAVE.GRID.RoomSize/2, 0 ) )
+
+        local zombie = ents.Create( "npc_zombie" )
+        zombie:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
+        zombie:Spawn()
     end,
     SetSpawnRoom = function( self )
         self.SpawnRoom = true
+
+        self.SpawnPos = ents.Create( "info_player_start" )
+        self.SpawnPos:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
+        self.SpawnPos:SetAngles( Angle( 0, 90, 0 ) )
+        self.SpawnPos:Spawn()
     end
 }
 
@@ -169,14 +193,14 @@ local grid_meta = {
 
         local pos = self:GetRoomPos( xCordinate, yCordinate )
 
-        local floor = ents.Create( "prop_physics" )
+        local floor = ents.Create( "cave_building" )
         floor:SetModel( "models/hunter/plates/plate8x8.mdl" )
         floor:SetMaterial( "cave_adventure/stone_floor" )
         floor:SetPos( pos )
         floor:Spawn()
         room.Floor = floor
 
-        local wall1 = ents.Create( "prop_physics" )
+        local wall1 = ents.Create( "cave_building" )
         wall1:SetModel( "models/hunter/plates/plate4x8.mdl" )
         wall1:SetMaterial( "cave_adventure/rock_wall" )
         wall1:SetPos( pos+Vector( -self.RoomSize/2, 0, 95 ) )
@@ -184,7 +208,7 @@ local grid_meta = {
         wall1:Spawn()
         room.Walls[1] = wall1
 
-        local wall2 = ents.Create( "prop_physics" )
+        local wall2 = ents.Create( "cave_building" )
         wall2:SetModel( "models/hunter/plates/plate4x8.mdl" )
         wall2:SetMaterial( "cave_adventure/rock_wall" )
         wall2:SetPos( pos+Vector( 0, self.RoomSize/2, 95 ) )
@@ -192,7 +216,7 @@ local grid_meta = {
         wall2:Spawn()
         room.Walls[2] = wall2
 
-        local wall3 = ents.Create( "prop_physics" )
+        local wall3 = ents.Create( "cave_building" )
         wall3:SetModel( "models/hunter/plates/plate4x8.mdl" )
         wall3:SetMaterial( "cave_adventure/rock_wall" )
         wall3:SetPos( pos+Vector( self.RoomSize/2, 0, 95 ) )
@@ -200,7 +224,7 @@ local grid_meta = {
         wall3:Spawn()
         room.Walls[3] = wall3
 
-        local wall4 = ents.Create( "prop_physics" )
+        local wall4 = ents.Create( "cave_building" )
         wall4:SetModel( "models/hunter/plates/plate4x8.mdl" )
         wall4:SetMaterial( "cave_adventure/rock_wall" )
         wall4:SetPos( pos+Vector( 0, -self.RoomSize/2, 95 ) )
@@ -208,7 +232,7 @@ local grid_meta = {
         wall4:Spawn()
         room.Walls[4] = wall4
 
-        local ceiling = ents.Create( "prop_physics" )
+        local ceiling = ents.Create( "cave_building" )
         ceiling:SetModel( "models/hunter/plates/plate8x8.mdl" )
         ceiling:SetMaterial( "cave_adventure/rock_wall" )
         ceiling:SetPos( pos+Vector( 0, 0, 167.5 ) )
@@ -252,7 +276,7 @@ local grid_meta = {
             end
         end
 
-        local floor = ents.Create( "prop_physics" )
+        local floor = ents.Create( "cave_building" )
         floor:SetModel( "models/hunter/plates/plate3x8.mdl" )
         floor:SetMaterial( "cave_adventure/stone_floor" )
         floor:SetPos( corridorPos )
@@ -260,7 +284,7 @@ local grid_meta = {
         floor:Spawn()
         table.insert( self.CorridorEnts, floor )
 
-        local wall1 = ents.Create( "prop_physics" )
+        local wall1 = ents.Create( "cave_building" )
         wall1:SetModel( "models/hunter/plates/plate3x8.mdl" )
         wall1:SetMaterial( "cave_adventure/rock_wall" )
         wall1:SetPos( floor:GetPos()+floor:GetForward()*72.6+floor:GetUp()*72 )
@@ -268,7 +292,7 @@ local grid_meta = {
         wall1:Spawn()
         table.insert( self.CorridorEnts, wall1 )
 
-        local wall2 = ents.Create( "prop_physics" )
+        local wall2 = ents.Create( "cave_building" )
         wall2:SetModel( "models/hunter/plates/plate3x8.mdl" )
         wall2:SetMaterial( "cave_adventure/rock_wall" )
         wall2:SetPos( floor:GetPos()-floor:GetForward()*72.6+floor:GetUp()*72 )
@@ -276,7 +300,7 @@ local grid_meta = {
         wall2:Spawn()
         table.insert( self.CorridorEnts, wall2 )
 
-        local ceiling = ents.Create( "prop_physics" )
+        local ceiling = ents.Create( "cave_building" )
         ceiling:SetModel( "models/hunter/plates/plate3x8.mdl" )
         ceiling:SetMaterial( "cave_adventure/rock_wall" )
         ceiling:SetPos( floor:GetPos()+floor:GetUp()*121.6 )
@@ -288,27 +312,19 @@ local grid_meta = {
 
 grid_meta.__index = grid_meta
 
-if( CAVE.GRID ) then
-    CAVE.GRID:Clear()
-end
-
-CAVE.GRID = {
-    Size = 5,
-    StartPos = Vector( 0, 0, 300 ),
-    RoomSize = 380,
-    RoomSpacing = 379
-}
-
-setmetatable( CAVE.GRID, grid_meta )
-
-CAVE_WORLDSPAWN = CAVE_WORLDSPAWN
-concommand.Add( "spawn_cave", function( ply )
-    if( not IsValid( CAVE_WORLDSPAWN ) ) then
-        CAVE_WORLDSPAWN = ents.Create( "worldspawn" )
-        CAVE_WORLDSPAWN:SetModel( "models/hunter/blocks/cube3x3x025.mdl" )
-        CAVE_WORLDSPAWN:SetPos( Vector( -37, 1052, 300 ) )
-        CAVE_WORLDSPAWN:Spawn()
+function CAVEADVENTURE.FUNC.SpawnCave()
+    if( CAVE.GRID ) then
+        CAVE.GRID:Clear()
     end
+    
+    CAVE.GRID = {
+        Size = 5,
+        StartPos = Vector( 0, 0, 300 ),
+        RoomSize = 380,
+        RoomSpacing = 379
+    }
+    
+    setmetatable( CAVE.GRID, grid_meta )
 
     CAVE.GRID:Clear()
 
@@ -317,7 +333,11 @@ concommand.Add( "spawn_cave", function( ply )
     room1:SetSpawnRoom()
 
     for k, v in ipairs( player.GetAll() ) do
-        v:SetPos( room1:GetPos()+Vector( 0, 0, 10 ) )
-        v:SetEyeAngles( Angle( 0, 90, 0 ) )
+        v:TeleportToSpawn()
     end
+end
+
+concommand.Add( "spawn_cave", function( ply )
+    if( IsValid( ply ) and not ply:IsSuperAdmin() ) then return end
+    CAVEADVENTURE.FUNC.SpawnCave()
 end )
