@@ -2,6 +2,8 @@
 include( "shared.lua" )
 
 -- CLIENT LOAD --
+include( "cl_drawing.lua" )
+include( "cl_fonts.lua" )
 include( "cl_monsters.lua" )
 
 -- VGUI LOAD --

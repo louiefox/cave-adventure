@@ -7,6 +7,8 @@ include( "shared.lua" )
 
 -- CLIENT LOAD --
 AddCSLuaFile( "cl_init.lua" )
+AddCSLuaFile( "cl_drawing.lua" )
+AddCSLuaFile( "cl_fonts.lua" )
 AddCSLuaFile( "cl_monsters.lua" )
 
 -- SERVER LOAD --
@@ -31,6 +33,8 @@ function GM:PlayerSpawn( ply, transiton )
 
     ply:SetHealth( ply:GetMaxHealth() )
     ply:SetCollisionGroup( 11 )
+
+    ply:TeleportToSpawn()
 end
 
 function GM:PlayerLoadout( ply )
@@ -40,7 +44,7 @@ function GM:PlayerLoadout( ply )
 	return true
 end
 
-hook.Add( "PlayerNoClip", "CaveAdventure.Hooks.PlayerNoClip", function( ply, desiredState )
+hook.Add( "PlayerNoClip", "CaveAdventure.PlayerNoClip.NoClip", function( ply, desiredState )
 	if( desiredState == false ) then
 		return true
 	elseif( ply:IsSuperAdmin() ) then
@@ -48,17 +52,14 @@ hook.Add( "PlayerNoClip", "CaveAdventure.Hooks.PlayerNoClip", function( ply, des
 	end
 end )
 
-hook.Add( "InitPostEntity", "CaveAdventure.Hooks.InitPostEntity", function()
-    for k, v in ipairs( ents.FindByClass( "info_player_start" ) ) do
-        v:Remove()
-    end
-
+hook.Add( "InitPostEntity", "CaveAdventure.InitPostEntity.CaveGen", function()
     CAVEADVENTURE.FUNC.SpawnCave()
 end )
 
-hook.Add( "Think", "CaveAdventure.Hooks.Think", function()
+hook.Add( "Think", "CaveAdventure.Think.Caves", function()
 	if( CAVE.GRID ) then
         for k, v in pairs( CAVE.GRID.Rooms or {} ) do
+            if( not v.Think ) then continue end
             v:Think()
         end
     end

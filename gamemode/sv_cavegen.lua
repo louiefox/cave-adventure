@@ -4,11 +4,7 @@ local room_meta = {
     Remove = function( self )
         self.Floor:Remove()
         self.Ceiling:Remove()
-
-        if( IsValid( self.SpawnPos ) ) then
-            self.SpawnPos:Remove() 
-        end
-
+        
         if( self.NavArea ) then
             self.NavArea:Remove() 
         end
@@ -98,11 +94,6 @@ local room_meta = {
             self.Walls[wallKey].Torch2 = torch2
         end
     end,
-    Think = function( self )
-        if( self.NavArea ) then
-            self.NavArea:Draw()
-        end
-    end,
     Generate = function( self )
         for i = 1, 4 do
             local axis = ((i == 1 or i == 3) and "X") or ((i == 2 or i == 4) and "Y")
@@ -125,11 +116,6 @@ local room_meta = {
     end,
     SetSpawnRoom = function( self )
         self.SpawnRoom = true
-
-        self.SpawnPos = ents.Create( "info_player_start" )
-        self.SpawnPos:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
-        self.SpawnPos:SetAngles( Angle( 0, 90, 0 ) )
-        self.SpawnPos:Spawn()
     end
 }
 

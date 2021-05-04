@@ -17,6 +17,7 @@ local function AddSharedFile( filePath )
 	include( filePath )
 end
 
+AddSharedFile( "config/cfg_main.lua" )
 AddSharedFile( "config/cfg_monsters.lua" )
 
 function GM:Initialize()
