@@ -20,6 +20,8 @@ end
 AddSharedFile( "config/cfg_main.lua" )
 AddSharedFile( "config/cfg_monsters.lua" )
 
+AddSharedFile( "sh_player.lua" )
+
 function GM:Initialize()
 
 end

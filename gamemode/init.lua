@@ -9,6 +9,9 @@ include( "shared.lua" )
 AddCSLuaFile( "cl_init.lua" )
 AddCSLuaFile( "cl_drawing.lua" )
 AddCSLuaFile( "cl_fonts.lua" )
+AddCSLuaFile( "cl_bshadows.lua" )
+AddCSLuaFile( "cl_panelmeta.lua" )
+AddCSLuaFile( "cl_hud.lua" )
 AddCSLuaFile( "cl_monsters.lua" )
 
 -- SERVER LOAD --
