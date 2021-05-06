@@ -18,10 +18,15 @@ local function AddSharedFile( filePath )
 end
 
 AddSharedFile( "config/cfg_main.lua" )
+AddSharedFile( "config/cfg_items.lua" )
 AddSharedFile( "config/cfg_monsters.lua" )
 
 AddSharedFile( "sh_player.lua" )
 
 function GM:Initialize()
 
+end
+
+function CAVEADVENTURE.FUNC.GetMaxStack( itemKey )
+    return 10
 end

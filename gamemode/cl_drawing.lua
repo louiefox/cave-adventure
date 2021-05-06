@@ -68,26 +68,27 @@ CAVEADVENTURE.MaskMaterial = CreateMaterial("!caveadventure_mask","UnlitGeneric"
 	["$alpha"] = 1,
 })
 
-local whiteColor = Color( 255, 255, 255 )
-local renderTarget
-local function drawRoundedMask( cornerRadius, x, y, w, h, drawFunc, roundTopLeft, roundTopRight, roundBottomLeft, roundBottomRight )
-	if( not renderTarget ) then
-		renderTarget = GetRenderTargetEx( "CAVEADVENTURE_ROUNDEDBOX", ScrW(), ScrH(), RT_SIZE_FULL_FRAME_BUFFER, MATERIAL_RT_DEPTH_NONE, 2, CREATERENDERTARGETFLAGS_UNFILTERABLE_OK, IMAGE_FORMAT_RGBA8888 )
+CAVEADVENTURE.TEMP.RenderTargets = CAVEADVENTURE.TEMP.RenderTargets or {}
+function CAVEADVENTURE.FUNC.DrawMask( maskName, maskFunc, drawFunc )
+	if( not CAVEADVENTURE.TEMP.RenderTargets[maskName] ) then
+		CAVEADVENTURE.TEMP.RenderTargets[maskName] = GetRenderTargetEx( "CaveAdventure." .. maskName, ScrW(), ScrH(), RT_SIZE_FULL_FRAME_BUFFER, MATERIAL_RT_DEPTH_NONE, 2, CREATERENDERTARGETFLAGS_UNFILTERABLE_OK, IMAGE_FORMAT_RGBA8888 )
 	end
 
-	render.PushRenderTarget( renderTarget )
+	render.PushRenderTarget( CAVEADVENTURE.TEMP.RenderTargets[maskName] )
 	render.OverrideAlphaWriteEnable( true, true )
 	render.Clear( 0, 0, 0, 0 ) 
 
 	drawFunc()
 
 	render.OverrideBlendFunc( true, BLEND_ZERO, BLEND_SRC_ALPHA, BLEND_DST_ALPHA, BLEND_ZERO )
-	draw.RoundedBoxEx( cornerRadius, x, y, w, h, whiteColor, roundTopLeft, roundTopRight, roundBottomLeft, roundBottomRight )
+
+	maskFunc()
+
 	render.OverrideBlendFunc( false )
 	render.OverrideAlphaWriteEnable( false )
 	render.PopRenderTarget() 
 
-	CAVEADVENTURE.MaskMaterial:SetTexture( "$basetexture", renderTarget )
+	CAVEADVENTURE.MaskMaterial:SetTexture( "$basetexture", CAVEADVENTURE.TEMP.RenderTargets[maskName] )
 
 	draw.NoTexture()
 
@@ -97,12 +98,18 @@ local function drawRoundedMask( cornerRadius, x, y, w, h, drawFunc, roundTopLeft
 	render.DrawScreenQuad() 
 end
 
+local whiteColor = Color( 255, 255, 255 )
+
 function CAVEADVENTURE.FUNC.DrawRoundedMask( cornerRadius, x, y, w, h, drawFunc )
-	drawRoundedMask( cornerRadius, x, y, w, h, drawFunc, true, true, true, true )
+	CAVEADVENTURE.FUNC.DrawMask( "RoundedBox", function()
+		draw.RoundedBox( cornerRadius, x, y, w, h, whiteColor )
+	end, drawFunc )
 end
 
 function CAVEADVENTURE.FUNC.DrawRoundedExMask( cornerRadius, x, y, w, h, drawFunc, roundTopLeft, roundTopRight, roundBottomLeft, roundBottomRight )
-	drawRoundedMask( cornerRadius, x, y, w, h, drawFunc, roundTopLeft, roundTopRight, roundBottomLeft, roundBottomRight )
+	CAVEADVENTURE.FUNC.DrawMask( "RoundedBoxEx", function()
+		draw.RoundedBoxEx( cornerRadius, x, y, w, h, whiteColor, roundTopLeft, roundTopRight, roundBottomLeft, roundBottomRight )
+	end, drawFunc )
 end
 
 -- CIRCLE/ARC STUFF --
@@ -298,30 +305,28 @@ function CAVEADVENTURE.FUNC.DrawBlur( p, a, d )
 	end
 end
 
-CAVEADVENTURE.TEMP.ItemSlotLoad = CAVEADVENTURE.TEMP.ItemSlotLoad or {}
-CAVEADVENTURE.TEMP.ModelsLoaded = CAVEADVENTURE.TEMP.ModelsLoaded or {}
-
-local function RunModelsLoadQueue()
-	local queueItem = CAVEADVENTURE.TEMP.ItemSlotLoad[1]
+CAVEADVENTURE.TEMP.IconLoadQueue = CAVEADVENTURE.TEMP.IconLoadQueue or {}
+local function RunIconLoadQueue()
+	local queueItem = CAVEADVENTURE.TEMP.IconLoadQueue[1]
 	if( queueItem ) then
-		table.remove( CAVEADVENTURE.TEMP.ItemSlotLoad, 1 )
+		table.remove( CAVEADVENTURE.TEMP.IconLoadQueue, 1 )
 
 		if( IsValid( queueItem[1] ) ) then
 			queueItem[2]()
-			timer.Create( "CAVEADVENTURE.Timer.ItemSlotLoad", 0.1, 1, function()
-				RunModelsLoadQueue()
+			timer.Create( "CAVEADVENTURE.Timer.IconLoadQueue", 0.1, 1, function()
+				RunIconLoadQueue()
 			end )
 		else
-			RunModelsLoadQueue()
+			RunIconLoadQueue()
 		end
 	end
 end
 
-function CAVEADVENTURE.FUNC.AddSlotToLoad( panel, func )
-	table.insert( CAVEADVENTURE.TEMP.ItemSlotLoad, { panel, func } )
+function CAVEADVENTURE.FUNC.AddIconToLoad( panel, func )
+	table.insert( CAVEADVENTURE.TEMP.IconLoadQueue, { panel, func } )
 	
-	if( timer.Exists( "CAVEADVENTURE.Timer.ItemSlotLoad" ) ) then return end
-	RunModelsLoadQueue()
+	if( timer.Exists( "CAVEADVENTURE.Timer.IconLoadQueue" ) ) then return end
+	RunIconLoadQueue()
 end
 
 local function GetImageFromURL( url, failFunc )

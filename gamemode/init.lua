@@ -12,6 +12,7 @@ AddCSLuaFile( "cl_fonts.lua" )
 AddCSLuaFile( "cl_bshadows.lua" )
 AddCSLuaFile( "cl_panelmeta.lua" )
 AddCSLuaFile( "cl_hud.lua" )
+AddCSLuaFile( "cl_player.lua" )
 AddCSLuaFile( "cl_monsters.lua" )
 
 -- SERVER LOAD --

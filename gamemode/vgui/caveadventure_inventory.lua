@@ -16,6 +16,8 @@ function PANEL:Init()
     self:RefreshSlots()
     self:RefreshItems()
 
+    hook.Add( "CaveAdventure.Hooks.InventoryUpdated", self, self.RefreshItems )
+
     self:SetStartCenter( ScrW()*0.75, ScrH()*0.75 )
     self:Open()
 end
@@ -44,19 +46,35 @@ end
 
 local gradientMat = Material( "cave_adventure/gradient_box.png" )
 function PANEL:RefreshItems()
+    local inventory = LocalPlayer():GetInventory()
     for k, v in ipairs( self.slotPanels ) do
         v:Clear()
 
-        if( math.random( 0, 100 ) > 75 ) then
-            local infoPanel = vgui.Create( "DPanel", v )
-            infoPanel:Dock( FILL )
-            infoPanel.Paint = function( self2, w, h )
-                CAVEADVENTURE.FUNC.DrawRoundedMask( 8, 0, 0, w, h, function()
-                    surface.SetDrawColor( 255, 0, 0 )
-                    surface.SetMaterial( gradientMat )
-                    surface.DrawTexturedRect( 0, 0, w, h )
-                end )
+        local item = inventory[k]
+        if( not item ) then continue end
+
+        local itemKey, amount = item[1], item[2]
+        local itemConfig = CAVEADVENTURE.CONFIG.Items[itemKey]
+        local rarityConfig = CAVEADVENTURE.CONFIG.Rarities[itemConfig.Rarity]
+
+        local infoPanel = vgui.Create( "DPanel", v )
+        infoPanel:Dock( FILL )
+        infoPanel.iconMat = itemConfig.Icon
+        infoPanel.Paint = function( self2, w, h )
+            CAVEADVENTURE.FUNC.DrawRoundedMask( 8, 0, 0, w, h, function()
+                surface.SetDrawColor( rarityConfig[4] )
+                surface.SetMaterial( gradientMat )
+                surface.DrawTexturedRect( 0, 0, w, h )
+            end )
+
+            if( self2.iconMat ) then
+                surface.SetDrawColor( 255, 255, 255 )
+                surface.SetMaterial( self2.iconMat )
+                local iconSize = w*0.7
+                surface.DrawTexturedRect( (w/2)-(iconSize/2), (h/2)-(iconSize/2), iconSize, iconSize )
             end
+
+            draw.SimpleTextOutlined( amount, "MontserratBold25", w-5, h, CAVEADVENTURE.FUNC.GetTheme( 4 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM, 2, CAVEADVENTURE.FUNC.GetTheme( 1 ) )	
         end
     end
 end

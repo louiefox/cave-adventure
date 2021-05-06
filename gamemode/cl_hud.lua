@@ -23,8 +23,39 @@ local binds = {
     }
 }
 
+local rounded_bar = Material( "cave_adventure/hud/rounded_bar.png" )
+local healthLerp = 0
 hook.Add( "HUDPaint", "CaveAdventure.HUDPaint.HUD", function()
-    local iconSize = CAVEADVENTURE.FUNC.ScreenScale( 64 )
+    local ply = LocalPlayer()
+
+    -- HEALTH HUD --
+    local w = ScrW()*0.15
+    local h = (270/1624)*w
+
+    local spacing = CAVEADVENTURE.FUNC.ScreenScale( 75 )
+    local borderSpace = 5
+
+    healthLerp = Lerp( RealFrameTime()*2, healthLerp, ply:Health() )
+
+    surface.SetMaterial( rounded_bar )
+
+    surface.SetDrawColor( CAVEADVENTURE.FUNC.GetTheme( 1 ) )
+    surface.DrawTexturedRect( spacing, ScrH()-spacing-h, w, h )
+
+    CAVEADVENTURE.FUNC.DrawMask( "HealthHUD", function()
+        surface.SetMaterial( rounded_bar )
+        surface.SetDrawColor( 255, 255, 255 )
+        surface.DrawTexturedRect( spacing+borderSpace, ScrH()-spacing-h+borderSpace, w-(2*borderSpace), h-(2*borderSpace) )
+    end, function()
+        surface.SetDrawColor( 255, 100, 100 )
+        surface.DrawRect( spacing+borderSpace, ScrH()-spacing-h+borderSpace, (w-(2*borderSpace))*math.Clamp( healthLerp/ply:GetMaxHealth(), 0, 1 ), h-(2*borderSpace) )
+
+        surface.SetDrawColor( 224, 61, 61 )
+        surface.DrawRect( spacing+borderSpace, ScrH()-spacing-h+borderSpace, (w-(2*borderSpace))*math.Clamp( ply:Health()/ply:GetMaxHealth(), 0, 1 ), h-(2*borderSpace) )
+    end )
+
+    -- BIND HUD --
+    local iconSize = CAVEADVENTURE.FUNC.ScreenScale( 68 )
     local screenSpace = CAVEADVENTURE.FUNC.ScreenScale( 75 )
 
     local y = ScrH()-screenSpace-iconSize
@@ -33,14 +64,7 @@ hook.Add( "HUDPaint", "CaveAdventure.HUDPaint.HUD", function()
         local x = ScrW()-screenSpace-(k*iconSize)-((k-1)*CAVEADVENTURE.FUNC.ScreenScale( 50 ))
 
         surface.SetMaterial( v[3] )
-
-        surface.SetDrawColor( CAVEADVENTURE.FUNC.GetTheme( 1 ) )
-        surface.DrawTexturedRect( x-1, y-1, iconSize, iconSize )
-        surface.DrawTexturedRect( x+1, y-1, iconSize, iconSize )
-        surface.DrawTexturedRect( x-1, y+1, iconSize, iconSize )
-        surface.DrawTexturedRect( x+1, y+1, iconSize, iconSize )
-
-        surface.SetDrawColor( CAVEADVENTURE.FUNC.GetTheme( 4 ) )
+        surface.SetDrawColor( 255, 255, 255 )
         surface.DrawTexturedRect( x, y, iconSize, iconSize )		
 
         draw.SimpleTextOutlined( v[1], "MontserratBold20", x+(iconSize/2), y+iconSize, CAVEADVENTURE.FUNC.GetTheme( 4 ), TEXT_ALIGN_CENTER, 0, 2, CAVEADVENTURE.FUNC.GetTheme( 1 ) )

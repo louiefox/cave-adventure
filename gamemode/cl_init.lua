@@ -7,6 +7,7 @@ include( "cl_fonts.lua" )
 include( "cl_bshadows.lua" )
 include( "cl_panelmeta.lua" )
 include( "cl_hud.lua" )
+include( "cl_player.lua" )
 include( "cl_monsters.lua" )
 
 -- VGUI LOAD --
