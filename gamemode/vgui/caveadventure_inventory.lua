@@ -37,6 +37,22 @@ function PANEL:RefreshSlots()
         slot.Paint = function( self2, w, h )
             draw.RoundedBox( 8, 0, 0, w, h, CAVEADVENTURE.FUNC.GetTheme( 2, 100 ) )
         end
+        slot:Receiver( "CaveAdventure.Item.Inventory", function( self2, panels, dropped )
+            local panel = panels[1]
+            if( not IsValid( panel ) ) then return end
+
+            if( not dropped ) then
+                return
+            end
+
+            local dropperSlot = panel.slotKey
+            if( dropperSlot == i ) then return end
+
+            net.Start( "CaveAdventure.RequestMoveInv" )
+                net.WriteUInt( i, 8 )
+                net.WriteUInt( dropperSlot, 8 )
+            net.SendToServer()
+        end )
 
         self.slotPanels[i] = slot
     end
@@ -57,25 +73,38 @@ function PANEL:RefreshItems()
         local itemConfig = CAVEADVENTURE.CONFIG.Items[itemKey]
         local rarityConfig = CAVEADVENTURE.CONFIG.Rarities[itemConfig.Rarity]
 
-        local infoPanel = vgui.Create( "DPanel", v )
+        local iconMat = itemConfig.Icon
+
+        local infoPanel = vgui.Create( "DButton", v )
         infoPanel:Dock( FILL )
-        infoPanel.iconMat = itemConfig.Icon
+        infoPanel:SetText( "" )
         infoPanel.Paint = function( self2, w, h )
+            self2:CreateFadeAlpha( false, 255 )
+
             CAVEADVENTURE.FUNC.DrawRoundedMask( 8, 0, 0, w, h, function()
                 surface.SetDrawColor( rarityConfig[4] )
                 surface.SetMaterial( gradientMat )
                 surface.DrawTexturedRect( 0, 0, w, h )
+
+                surface.SetDrawColor( rarityConfig[4].r, rarityConfig[4].g, rarityConfig[4].b, self2.alpha )
+                surface.SetMaterial( gradientMat )
+                surface.DrawTexturedRect( 0, 0, w, h )
             end )
 
-            if( self2.iconMat ) then
+            if( iconMat ) then
                 surface.SetDrawColor( 255, 255, 255 )
-                surface.SetMaterial( self2.iconMat )
+                surface.SetMaterial( iconMat )
                 local iconSize = w*0.7
                 surface.DrawTexturedRect( (w/2)-(iconSize/2), (h/2)-(iconSize/2), iconSize, iconSize )
             end
 
             draw.SimpleTextOutlined( amount, "MontserratBold25", w-5, h, CAVEADVENTURE.FUNC.GetTheme( 4 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM, 2, CAVEADVENTURE.FUNC.GetTheme( 1 ) )	
         end
+        infoPanel:Droppable( "CaveAdventure.Item.Inventory" )
+        infoPanel.DroppedOn = function( self2 )
+
+        end
+        infoPanel.slotKey = k
     end
 end
 

@@ -34,6 +34,9 @@ function player_meta:SendInventoryItems( slotsChanged )
         for k, v in pairs( slotsChanged ) do
             local item = inventory[v]
             net.WriteUInt( v, 8 )
+            net.WriteBool( (item and true) or false )
+
+            if( not item ) then continue end
             net.WriteString( item[1] )
             net.WriteUInt( item[2], 32 )
         end
@@ -85,11 +88,6 @@ function player_meta:AddInventoryItems( ... )
     self.CAVEADVENTURE_INVENTORY = inventory
     self:SendInventoryItems( slotsChanged )
 end
-
-concommand.Add( "caveadventure_additem", function( ply, cmd, args )
-    if( not args[1] or not args[2] ) then return end
-    ply:AddInventoryItems( args[1], tonumber( args[2] ) or 1 )
-end )
 
 -- function player_meta:TakeInventoryItems( ... )
 --     local itemsToTake = { ... }

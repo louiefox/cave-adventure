@@ -13,11 +13,14 @@ AddCSLuaFile( "cl_bshadows.lua" )
 AddCSLuaFile( "cl_panelmeta.lua" )
 AddCSLuaFile( "cl_hud.lua" )
 AddCSLuaFile( "cl_player.lua" )
+AddCSLuaFile( "cl_inventory.lua" )
 AddCSLuaFile( "cl_monsters.lua" )
 
 -- SERVER LOAD --
 include( "sv_cavegen.lua" )
 include( "sv_player.lua" )
+include( "sv_inventory.lua" )
+include( "sv_admin.lua" )
 
 -- VGUI LOAD --
 for k, v in pairs( file.Find( GM.FolderName .. "/gamemode/vgui/*.lua", "LUA" ) ) do

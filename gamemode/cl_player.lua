@@ -15,9 +15,10 @@ net.Receive( "CaveAdventure.SendInventoryItems", function()
 
     local amount = net.ReadUInt( 10 )
     for i = 1, amount do
-        local slotKey, itemKey, itemAmount = net.ReadUInt( 8 ), net.ReadString(), net.ReadUInt( 32 )
-        if( itemAmount > 0 ) then
-            CAVEADVENTURE_INVENTORY[slotKey] = { itemKey, itemAmount }
+        local slotKey, hasItem = net.ReadUInt( 8 ), net.ReadBool()
+
+        if( hasItem ) then
+            CAVEADVENTURE_INVENTORY[slotKey] = { net.ReadString(), net.ReadUInt( 32 ) }
         else
             CAVEADVENTURE_INVENTORY[slotKey] = nil
         end

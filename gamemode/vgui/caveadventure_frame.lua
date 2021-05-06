@@ -73,6 +73,7 @@ end
 function PANEL:Open()
     self:SetVisible( true )
     gui.EnableScreenClicker( true )
+    self.open = true
 
     self:SetAlpha( 0 )
     self:AlphaTo( 255, 0.2 )
@@ -82,6 +83,7 @@ function PANEL:Open()
 end
 
 function PANEL:Close()
+    self.open = false
     gui.EnableScreenClicker( false )
     
     self:AlphaTo( 0, 0.2 )
@@ -114,6 +116,12 @@ end
 function PANEL:SetTargetSize( w, h )
     self:SetWide( w )
     self.targetH = h
+end
+
+function PANEL:Think()
+    if( not vgui.CursorVisible() and self.open ) then
+        gui.EnableScreenClicker( true )
+    end
 end
 
 function PANEL:Paint( w, h )
