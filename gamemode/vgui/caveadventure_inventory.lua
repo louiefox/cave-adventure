@@ -57,7 +57,7 @@ function PANEL:RefreshSlots()
         self.slotPanels[i] = slot
     end
 
-    self:SetTargetSize( ScrW()*0.15, self.headerSize+20+(math.ceil( slotCount/slotsWide )*(slotSize+self.slotSpacing))-self.slotSpacing )
+    self:SetTargetSize( ScrW()*0.15, 20+(math.ceil( slotCount/slotsWide )*(slotSize+self.slotSpacing))-self.slotSpacing )
 end
 
 local gradientMat = Material( "cave_adventure/gradient_box.png" )

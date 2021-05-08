@@ -9,6 +9,7 @@ include( "cl_panelmeta.lua" )
 include( "cl_hud.lua" )
 include( "cl_player.lua" )
 include( "cl_inventory.lua" )
+include( "cl_derma_popups.lua" )
 include( "cl_monsters.lua" )
 
 -- VGUI LOAD --

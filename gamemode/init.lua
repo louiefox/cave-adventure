@@ -14,6 +14,7 @@ AddCSLuaFile( "cl_panelmeta.lua" )
 AddCSLuaFile( "cl_hud.lua" )
 AddCSLuaFile( "cl_player.lua" )
 AddCSLuaFile( "cl_inventory.lua" )
+AddCSLuaFile( "cl_derma_popups.lua" )
 AddCSLuaFile( "cl_monsters.lua" )
 
 -- SERVER LOAD --

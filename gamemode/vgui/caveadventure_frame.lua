@@ -66,6 +66,11 @@ function PANEL:CreateCloseButton()
 		surface.DrawTexturedRect( (w/2)-(iconSize/2), (h/2)-(iconSize/2), iconSize, iconSize )
 	end
     self.closeButton.DoClick = function()
+        if( self.closeFunc ) then
+            self.closeFunc()
+            return
+        end
+
         self:Close()
     end
 end
@@ -115,7 +120,7 @@ end
 
 function PANEL:SetTargetSize( w, h )
     self:SetWide( w )
-    self.targetH = h
+    self.targetH = self.headerSize+h
 end
 
 function PANEL:Think()
