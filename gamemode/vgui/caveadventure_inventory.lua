@@ -20,6 +20,37 @@ function PANEL:Init()
 
     self:SetStartCenter( ScrW()*0.75, ScrH()*0.75 )
     self:Open()
+
+    self.screenPanel = vgui.Create( "DPanel" )
+    self.screenPanel:SetSize( ScrW(), ScrH() )
+    self.screenPanel:SetZPos( -1000 )
+    self.screenPanel.Paint = function() end
+    self.screenPanel:Receiver( "CaveAdventure.Item.Inventory", function( self2, panels, dropped )
+        local panel = panels[1]
+        if( not dropped or not IsValid( panel ) ) then return end
+
+        local dropperSlot = panel.slotKey
+        if( not dropperSlot ) then return end
+
+        CAVEADVENTURE.FUNC.DermaQuery( "Are you sure you want to DELETE this item?", "INVENTORY", "Confirm", function() 
+            net.Start( "CaveAdventure.RequestDeleteInv" )
+                net.WriteUInt( dropperSlot, 8 )
+            net.SendToServer()
+        end, "Cancel" )
+    end )
+
+    self.onClose = function()
+        if( not CAVEADVENTURE.TEMP.RemoveOnClose ) then
+            self.screenPanel:SetVisible( false )
+        else
+            self.screenPanel:Remove()
+        end
+    end
+    self.onOpen = function()
+        if( IsValid( self.screenPanel ) ) then
+            self.screenPanel:SetVisible( false )
+        end
+    end
 end
 
 function PANEL:RefreshSlots()
@@ -39,11 +70,7 @@ function PANEL:RefreshSlots()
         end
         slot:Receiver( "CaveAdventure.Item.Inventory", function( self2, panels, dropped )
             local panel = panels[1]
-            if( not IsValid( panel ) ) then return end
-
-            if( not dropped ) then
-                return
-            end
+            if( not dropped or not IsValid( panel ) ) then return end
 
             local dropperSlot = panel.slotKey
             if( dropperSlot == i ) then return end
@@ -101,9 +128,6 @@ function PANEL:RefreshItems()
             draw.SimpleTextOutlined( amount, "MontserratBold25", w-5, h, CAVEADVENTURE.FUNC.GetTheme( 4 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM, 2, CAVEADVENTURE.FUNC.GetTheme( 1 ) )	
         end
         infoPanel:Droppable( "CaveAdventure.Item.Inventory" )
-        infoPanel.DroppedOn = function( self2 )
-
-        end
         infoPanel.slotKey = k
     end
 end

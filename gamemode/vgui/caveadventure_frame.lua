@@ -80,6 +80,10 @@ function PANEL:Open()
     gui.EnableScreenClicker( true )
     self.open = true
 
+    if( self.onOpen ) then
+        self.onOpen()
+    end
+
     self:SetAlpha( 0 )
     self:AlphaTo( 255, 0.2 )
     self:SizeTo( self:GetWide(), self.targetH, 0.2, 0, -1, function()
@@ -90,6 +94,10 @@ end
 function PANEL:Close()
     self.open = false
     gui.EnableScreenClicker( false )
+
+    if( self.onClose ) then
+        self.onClose()
+    end
     
     self:AlphaTo( 0, 0.2 )
     self:SizeTo( self:GetWide(), 0, 0.2, 0, -1, function()

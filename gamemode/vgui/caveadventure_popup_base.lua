@@ -3,9 +3,6 @@ local PANEL = {}
 function PANEL:Init()
     self:SetSize( ScrW(), ScrH() )
     self:MakePopup()
-    self:SetTitle( "" )
-    self:SetDraggable( false )
-    self:ShowCloseButton( false )
     self:SetAlpha( 0 )
     self:AlphaTo( 255, 0.2 )
 
@@ -34,7 +31,13 @@ end
 function PANEL:Close()
     self.frame:Close()
 
-    self:AlphaTo( 0, 0.2, 0, function() self:Remove() end )
+    self:AlphaTo( 0, 0.2, 0, function() 
+        local oldX, oldY = input.GetCursorPos()
+
+        self:Remove() 
+
+        timer.Simple( 0, function() input.SetCursorPos( oldX, oldY ) end )
+    end )
 end
 
 function PANEL:OnChildAdded( panel )
@@ -46,4 +49,4 @@ function PANEL:Paint( w, h )
     CAVEADVENTURE.FUNC.DrawBlur( self, 4, 4 )
 end
 
-vgui.Register( "caveadventure_popup_base", PANEL, "DFrame" )
+vgui.Register( "caveadventure_popup_base", PANEL, "EditablePanel" )
