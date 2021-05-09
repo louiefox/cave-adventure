@@ -22,8 +22,8 @@ CAVEADVENTURE.CONFIG.Themes.DarkOrange = Color( 230, 126, 34 )
 -- RARITY CONFIG --
 CAVEADVENTURE.CONFIG.Rarities = {
     ["legendary"] = { 5, "Legendary", Color( 186, 150, 39 ), Color( 242, 201, 76 ) }, -- SortOrder, Name, TextColor, BackgroundColor
-    ["epic"] = { 4, "Epic", Color( 112, 39, 186 ), Color( 189, 76, 242 ) },
-    ["rare"] = { 3, "Rare", Color( 58, 73, 211 ), Color( 49, 69, 255 ) },
+    ["epic"] = { 4, "Epic", Color( 189, 76, 242 ), Color( 189, 76, 242 ) },
+    ["rare"] = { 3, "Rare", Color( 92, 108, 250 ), Color( 49, 69, 255 ) },
     ["uncommon"] = { 2, "Uncommon", Color( 61, 211, 58 ), Color( 51, 138, 49 ) },
     ["common"] = { 1, "Common", Color( 182, 182, 182 ), Color( 182, 182, 182 ) }
 }

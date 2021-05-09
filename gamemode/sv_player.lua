@@ -19,10 +19,7 @@ end
 util.AddNetworkString( "CaveAdventure.SendInventory" )
 function player_meta:SetInventory( inventory )
     self.CAVEADVENTURE_INVENTORY = inventory
-
-    net.Start( "CaveAdventure.SendInventory" )
-        net.WriteTable( inventory )
-    net.Send( self )
+    self:SendInventoryItems( table.GetKeys( inventory ) )
 end
 
 util.AddNetworkString( "CaveAdventure.SendInventoryItems" )
@@ -41,6 +38,26 @@ function player_meta:SendInventoryItems( slotsChanged )
             net.WriteUInt( item[2], 32 )
         end
     net.Send( self )
+end
+
+function player_meta:SaveInventorySlotsToDB( slots )
+    local userID = self:GetUserID()
+    local inventory = self:GetInventory()
+
+    for k, slot in ipairs( slots ) do
+        local item = inventory[slot]
+        if( item ) then
+            CAVEADVENTURE.FUNC.SQLQuery( "SELECT * FROM caveadventure_inventory WHERE userID = '" .. userID .. "' AND slot = '" .. slot .. "';", function( data )
+                if( data ) then 
+                    CAVEADVENTURE.FUNC.SQLQuery( "UPDATE caveadventure_inventory SET item = '" .. item[1] .. "', amount = " .. item[2] .. " WHERE userID = '" .. userID .. "' AND slot = '" .. slot .. "';" )
+                else
+                    CAVEADVENTURE.FUNC.SQLQuery( "INSERT INTO caveadventure_inventory( userID, slot, item, amount ) VALUES(" .. userID .. "," .. slot .. ",'" .. item[1] .. "'," .. item[2] .. ");" )
+                end
+            end, true )
+        else
+            CAVEADVENTURE.FUNC.SQLQuery( "DELETE FROM caveadventure_inventory WHERE userID = '" .. userID .. "' AND slot = '" .. slot .. "';" )
+        end
+    end
 end
 
 function player_meta:AddInventoryItems( ... )
@@ -87,6 +104,7 @@ function player_meta:AddInventoryItems( ... )
 
     self.CAVEADVENTURE_INVENTORY = inventory
     self:SendInventoryItems( slotsChanged )
+    self:SaveInventorySlotsToDB( slotsChanged )
 end
 
 -- function player_meta:TakeInventoryItems( ... )

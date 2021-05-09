@@ -48,7 +48,7 @@ function PANEL:Init()
     end
     self.onOpen = function()
         if( IsValid( self.screenPanel ) ) then
-            self.screenPanel:SetVisible( false )
+            self.screenPanel:SetVisible( true )
         end
     end
 end
@@ -97,35 +97,27 @@ function PANEL:RefreshItems()
         if( not item ) then continue end
 
         local itemKey, amount = item[1], item[2]
-        local itemConfig = CAVEADVENTURE.CONFIG.Items[itemKey]
-        local rarityConfig = CAVEADVENTURE.CONFIG.Rarities[itemConfig.Rarity]
 
-        local iconMat = itemConfig.Icon
-
-        local infoPanel = vgui.Create( "DButton", v )
+        local infoPanel = vgui.Create( "caveadventure_item", v )
         infoPanel:Dock( FILL )
-        infoPanel:SetText( "" )
-        infoPanel.Paint = function( self2, w, h )
-            self2:CreateFadeAlpha( false, 255 )
-
-            CAVEADVENTURE.FUNC.DrawRoundedMask( 8, 0, 0, w, h, function()
-                surface.SetDrawColor( rarityConfig[4] )
-                surface.SetMaterial( gradientMat )
-                surface.DrawTexturedRect( 0, 0, w, h )
-
-                surface.SetDrawColor( rarityConfig[4].r, rarityConfig[4].g, rarityConfig[4].b, self2.alpha )
-                surface.SetMaterial( gradientMat )
-                surface.DrawTexturedRect( 0, 0, w, h )
-            end )
-
-            if( iconMat ) then
-                surface.SetDrawColor( 255, 255, 255 )
-                surface.SetMaterial( iconMat )
-                local iconSize = w*0.7
-                surface.DrawTexturedRect( (w/2)-(iconSize/2), (h/2)-(iconSize/2), iconSize, iconSize )
+        infoPanel:SetItemInfo( itemKey, amount )
+        infoPanel.OnCursorEntered = function( self2 )
+            if( not IsValid( self2.tooltip ) ) then
+                self2.tooltip = vgui.Create( "caveadventure_item_tooltip" )
+                self2.tooltip:SetItemInfo( itemKey, amount )
+                local x, y = self2:LocalToScreen( 0, 0 )
+                self2.tooltip:SetPos( x+v:GetWide()+10, y+(v:GetTall()/2)-(self2.tooltip:GetTall()/2) )
+                self2.tooltip.Think = function( self3 )
+                    if( not IsValid( self2 ) or not self2:IsHovered() ) then
+                        self3:Remove()
+                    end
+                end
             end
-
-            draw.SimpleTextOutlined( amount, "MontserratBold25", w-5, h, CAVEADVENTURE.FUNC.GetTheme( 4 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM, 2, CAVEADVENTURE.FUNC.GetTheme( 1 ) )	
+        end
+        infoPanel.OnCursorExited = function( self2 )
+            if( IsValid( self2.tooltip ) ) then
+                self2.tooltip:Remove()
+            end
         end
         infoPanel:Droppable( "CaveAdventure.Item.Inventory" )
         infoPanel.slotKey = k

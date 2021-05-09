@@ -30,3 +30,13 @@ end
 function CAVEADVENTURE.FUNC.GetMaxStack( itemKey )
     return 10
 end
+
+function CAVEADVENTURE.FUNC.GetMoneyTable( money )
+    local gold = math.floor( money/10000 )
+    money = money-gold*10000
+
+    local silver = math.floor( money/100 )
+    money = money-silver*100
+
+    return gold, silver, money
+end

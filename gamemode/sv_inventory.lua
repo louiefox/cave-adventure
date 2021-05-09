@@ -35,6 +35,7 @@ net.Receive( "CaveAdventure.RequestMoveInv", function( len, ply )
 
     ply.CAVEADVENTURE_INVENTORY = inventory
     ply:SendInventoryItems( { receiverSlot, dropperSlot } )
+    ply:SaveInventorySlotsToDB( { receiverSlot, dropperSlot } )
 end )
 
 util.AddNetworkString( "CaveAdventure.RequestDeleteInv" )
@@ -49,4 +50,5 @@ net.Receive( "CaveAdventure.RequestDeleteInv", function( len, ply )
 
     ply.CAVEADVENTURE_INVENTORY = inventory
     ply:SendInventoryItems( { slot } )
+    ply:SaveInventorySlotsToDB( { slot } )
 end )
