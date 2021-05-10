@@ -5,8 +5,11 @@ local room_meta = {
         self.Floor:Remove()
         self.Ceiling:Remove()
         
-        if( self.NavArea ) then
-            self.NavArea:Remove() 
+        if( self.Monsters ) then
+            for k, v in ipairs( self.Monsters ) do
+                if( not IsValid( v ) ) then continue end
+                v:Remove()
+            end
         end
 
         for k, v in ipairs( self.Walls ) do
@@ -114,6 +117,10 @@ local room_meta = {
         zombie:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
         zombie:SetInitMonsterClass( "zombie" )
         zombie:Spawn()
+
+        self.Monsters = {
+            zombie
+        }
     end,
     SetSpawnRoom = function( self )
         self.SpawnRoom = true
@@ -298,6 +305,10 @@ local grid_meta = {
         ceiling:SetAngles( floor:GetAngles() )
         ceiling:Spawn()
         table.insert( self.CorridorEnts, ceiling )
+    end,
+    AddPlayer = function( self, ply )
+        self.Players[ply] = true
+        ply:TeleportToCave( self.CaveKey )
     end
 }
 
@@ -311,10 +322,12 @@ function CAVEADVENTURE.FUNC.SpawnCave( caveKey )
     end
     
     local newCave = {
+        CaveKey = caveKey,
         Size = caveCfg.Size,
         StartPos = caveCfg.StartPos,
         Rooms = {},
         CorridorEnts = {},
+        Players = {},
         RoomSize = 380,
         RoomSpacing = 379
     }
@@ -326,11 +339,6 @@ function CAVEADVENTURE.FUNC.SpawnCave( caveKey )
     room1:SetSpawnRoom()
 
     CAVEADVENTURE.TEMP.Caves[caveKey] = newCave
+
+    return newCave
 end
-
-concommand.Add( "spawn_cave", function( ply, cmd, args )
-    if( IsValid( ply ) and not ply:IsSuperAdmin() ) then return end
-    CAVEADVENTURE.FUNC.SpawnCave( tonumber( args[1] or "" ) or 1 )
-
-    ply:TeleportToCave( tonumber( args[1] or "" ) or 1 )
-end )

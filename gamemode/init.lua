@@ -80,7 +80,8 @@ end
 
 function GM:PlayerLoadout( ply )
     ply:StripWeapons()
-    ply:Give( "m9k_glock" )
+    ply:Give( "weapon_357" )
+    ply:GiveAmmo( 200, "357", true )
 
 	return true
 end
@@ -104,12 +105,45 @@ hook.Add( "Think", "CaveAdventure.Think.Caves", function()
     end
 end )
 
-hook.Add( "InitPostEntity", "CaveAdventure.InitPostEntity.NPCs", function()
+function CAVEADVENTURE.FUNC.SpawnPortals()
+    for k, v in ipairs( CAVEADVENTURE.TEMP.Portals or {} ) do
+        if( not IsValid( v ) ) then continue end
+        v:Remove()
+    end
+
+    CAVEADVENTURE.TEMP.Portals = {}
+    for k, v in pairs( CAVEADVENTURE.CONFIG.Caves ) do
+        local portal = ents.Create( "caveadventure_caveportal" )
+        portal:SetPos( v.PortalPos )
+        portal:SetAngles( v.PortalAngles )
+        portal:SetCaveKey( k )
+        portal:Spawn()
+
+        table.insert( CAVEADVENTURE.TEMP.Portals, portal )
+    end
+end
+
+hook.Add( "InitPostEntity", "CaveAdventure.InitPostEntity", function()
     for k, v in pairs( CAVEADVENTURE.CONFIG.NPCs ) do
         local npc = ents.Create( "caveadventure_npc" )
         npc:SetPos( v.Position )
         npc:SetAngles( v.Angles )
         npc:SetConfigKey( k )
         npc:Spawn()
+    end
+
+    CAVEADVENTURE.FUNC.SpawnPortals()
+end )
+
+hook.Add( "PlayerDeath", "CaveAdventure.PlayerDeath", function( victim )
+    for k, v in pairs( CAVEADVENTURE.TEMP.Caves ) do
+        if( not (v.Players or {})[victim] ) then continue end
+
+        v.Players[victim] = nil
+
+        if( table.Count( v.Players ) <= 0 ) then
+            v:Clear()
+            CAVEADVENTURE.TEMP.Caves[k] = nil
+        end
     end
 end )
