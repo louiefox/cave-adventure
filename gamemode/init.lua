@@ -116,8 +116,8 @@ function CAVEADVENTURE.FUNC.SpawnPortals()
         local portal = ents.Create( "caveadventure_caveportal" )
         portal:SetPos( v.PortalPos )
         portal:SetAngles( v.PortalAngles )
-        portal:SetCaveKey( k )
         portal:Spawn()
+        portal:SetCaveKey( k )
 
         table.insert( CAVEADVENTURE.TEMP.Portals, portal )
     end
@@ -128,8 +128,8 @@ hook.Add( "InitPostEntity", "CaveAdventure.InitPostEntity", function()
         local npc = ents.Create( "caveadventure_npc" )
         npc:SetPos( v.Position )
         npc:SetAngles( v.Angles )
-        npc:SetConfigKey( k )
         npc:Spawn()
+        npc:SetConfigKey( k )
     end
 
     CAVEADVENTURE.FUNC.SpawnPortals()

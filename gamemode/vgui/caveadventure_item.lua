@@ -37,6 +37,26 @@ function PANEL:Paint( w, h )
     end
 
     if( self.amount ) then draw.SimpleTextOutlined( self.amount, "MontserratBold25", w-5, h, CAVEADVENTURE.FUNC.GetTheme( 4 ), TEXT_ALIGN_RIGHT, TEXT_ALIGN_BOTTOM, 2, CAVEADVENTURE.FUNC.GetTheme( 1 ) ) end
+
+    if( self.customCursor ) then
+        local cursorX, cursorY = self:LocalCursorPos()
+        if( cursorX <= 0 or cursorX >= w or cursorY <= 0 or cursorY >= h ) then return end
+
+        DisableClipping( true )
+
+        surface.SetMaterial( self.customCursor )
+
+        surface.SetDrawColor( CAVEADVENTURE.FUNC.GetTheme( 1 ) )
+        surface.DrawTexturedRect( cursorX+1, cursorY+1, 24, 24 )
+        surface.DrawTexturedRect( cursorX-1, cursorY+1, 24, 24 )
+        surface.DrawTexturedRect( cursorX+1, cursorY-1, 24, 24 )
+        surface.DrawTexturedRect( cursorX-1, cursorY-1, 24, 24 )
+        
+        surface.SetDrawColor( CAVEADVENTURE.FUNC.GetTheme( 4 ) )
+        surface.DrawTexturedRect( cursorX, cursorY, 24, 24 )
+
+        DisableClipping( false )
+    end
 end
 
 vgui.Register( "caveadventure_item", PANEL, "DButton" )

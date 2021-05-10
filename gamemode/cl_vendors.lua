@@ -8,4 +8,6 @@ function CAVEADVENTURE.FUNC.OpenVendor( configKey )
         CAVEADVENTURE.TEMP.VendorMenu = vgui.Create( "caveadventure_vendor" )
         CAVEADVENTURE.TEMP.VendorMenu:SetConfigKey( configKey )
     end
+
+    hook.Run( "CaveAdventure.Hooks.VendorToggled" )
 end

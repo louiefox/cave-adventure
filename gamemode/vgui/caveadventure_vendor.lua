@@ -21,11 +21,17 @@ function PANEL:Init()
 
     self:SetTargetSize( ScrW()*0.2, (5*(self.slotH+self.slotSpacing))-self.slotSpacing+20+self.bottom:GetTall() )
     self:SetStartCenter( ScrW()*0.25, ScrH()*0.5 )
-    self:Open( false, true )
+    self:Open()
+
+    self.onClose = function()
+        timer.Simple( 0.2, function() hook.Run( "CaveAdventure.Hooks.VendorToggled" ) end )
+    end
 end
 
 function PANEL:SetConfigKey( configKey )
     self.grid:Clear()
+
+    self.configKey = configKey
 
     local config = CAVEADVENTURE.CONFIG.NPCs[configKey]
     if( not config ) then return end
@@ -95,17 +101,29 @@ function PANEL:SetConfigKey( configKey )
         slot.button:SetText( "" )
         slot.button.Paint = function( self2, w, h ) end
         slot.button.DoClick = function()
-            CAVEADVENTURE.FUNC.DermaQuery( "Are you sure you want to purchase this?", "VENDOR", "Confirm", function() 
-                if( LocalPlayer():GetMoney() >= cost ) then
-                    net.Start( "CaveAdventure.RequestVendorPurchase" )
-                        net.WriteString( configKey )
-                        net.WriteUInt( vendorSlot, 8 )
-                    net.SendToServer()
-                else
-                    CAVEADVENTURE.FUNC.DermaMessage( "You cannot afford to buy this!", "VENDOR" )
-                end
-            end, "Cancel" )
+            if( LocalPlayer():GetMoney() >= cost ) then
+                net.Start( "CaveAdventure.RequestVendorPurchase" )
+                    net.WriteString( configKey )
+                    net.WriteUInt( vendorSlot, 8 )
+                net.SendToServer()
+            else
+                CAVEADVENTURE.FUNC.DermaMessage( "You cannot afford to buy this!", "VENDOR" )
+            end
         end
+    end
+end
+
+function PANEL:Think()
+    if( not self.open ) then return end
+
+    local configKey = self.configKey
+    if( not configKey ) then return end
+
+    local config = CAVEADVENTURE.CONFIG.NPCs[configKey]
+    if( not config ) then return end
+
+    if( LocalPlayer():GetPos():DistToSqr( config.Position ) > 10000 ) then
+        self:Close()
     end
 end
 

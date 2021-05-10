@@ -7,6 +7,10 @@ net.Receive( "CaveAdventure.SendChatNotification", function()
     chat.AddText( net.ReadColor(), net.ReadString(), " ", net.ReadColor(), net.ReadString() )
 end )
 
+net.Receive( "CaveAdventure.SendSoundEffect", function()
+    surface.PlaySound( net.ReadString() )
+end )
+
 -- MONEY FUNCTIONS --
 net.Receive( "CaveAdventure.SendMoney", function()
     CAVEADVENTURE_MONEY = net.ReadUInt( 32 ) or 0

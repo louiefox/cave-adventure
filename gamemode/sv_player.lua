@@ -21,6 +21,13 @@ function player_meta:SendChatNotification( tagColor, tagString, msgColor, msgStr
 	net.Send( self )
 end
 
+util.AddNetworkString( "CaveAdventure.SendSoundEffect" )
+function player_meta:SendSoundEffect( soundEffect )
+	net.Start( "CaveAdventure.SendSoundEffect" )
+		net.WriteString( soundEffect )
+	net.Send( self )
+end
+
 -- CAVE FUNCTIONS --
 function player_meta:TeleportToCave( caveKey )
     local cave = CAVEADVENTURE.TEMP.Caves[caveKey]

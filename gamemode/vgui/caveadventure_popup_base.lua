@@ -31,6 +31,9 @@ end
 function PANEL:Close()
     self.frame:Close()
 
+    self:SetMouseInputEnabled( false )
+    self:SetKeyboardInputEnabled( false )
+
     self:AlphaTo( 0, 0.2, 0, function() 
         self:Remove() 
     end )

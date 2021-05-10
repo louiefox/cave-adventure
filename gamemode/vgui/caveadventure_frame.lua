@@ -76,6 +76,7 @@ function PANEL:CreateCloseButton()
 end
 
 function PANEL:Open( disablePopup, enableKeyboard )
+    self.open = true
     if( not disablePopup ) then
         self:MakePopup()
     end
@@ -96,6 +97,7 @@ function PANEL:Open( disablePopup, enableKeyboard )
 end
 
 function PANEL:Close()
+    self.open = false
     self:SetMouseInputEnabled( false )
     self:SetKeyboardInputEnabled( false )
 

@@ -36,6 +36,7 @@ function PANEL:Init()
     self:RefreshItems()
 
     hook.Add( "CaveAdventure.Hooks.InventoryUpdated", self, self.RefreshItems )
+    hook.Add( "CaveAdventure.Hooks.VendorToggled", self, self.UpdateCursor )
 
     self:SetStartCenter( ScrW()*0.75, ScrH()*0.75 )
     self:Open()
@@ -140,6 +141,30 @@ function PANEL:RefreshItems()
         end
         infoPanel:Droppable( "CaveAdventure.Item.Inventory" )
         infoPanel.slotKey = k
+        infoPanel.DoRightClick = function()
+            if( IsValid( CAVEADVENTURE.TEMP.VendorMenu ) and CAVEADVENTURE.TEMP.VendorMenu:IsVisible() ) then
+                net.Start( "CaveAdventure.RequestVendorSell" )
+                    net.WriteUInt( k, 8 )
+                net.SendToServer()
+            end
+        end
+
+        v.infoPanel = infoPanel
+    end
+
+    self:UpdateCursor()
+end
+
+function PANEL:UpdateCursor()
+    local cursor, customCursor = "hand"
+    if( IsValid( CAVEADVENTURE.TEMP.VendorMenu ) and CAVEADVENTURE.TEMP.VendorMenu:IsVisible() ) then
+        cursor, customCursor = "blank", Material( "cave_adventure/icons/cursor_sell.png" )
+    end
+
+    for k, v in ipairs( self.slotPanels ) do
+        if( not IsValid( v.infoPanel ) ) then continue end
+        v.infoPanel:SetCursor( cursor )
+        v.infoPanel.customCursor = customCursor
     end
 end
 

@@ -30,4 +30,31 @@ net.Receive( "CaveAdventure.RequestVendorPurchase", function( len, ply )
     ply:AddInventoryItems( itemKey, amount )
 
     ply:SendChatNotification( Color( 50, 255, 50 ), "[VENDOR]", Color( 255, 255, 255 ), "Purchased x" .. amount .. " " .. itemCfg.Name .. " from " .. npcCfg.Name .. " for " .. CAVEADVENTURE.FUNC.FormatMoneyText( cost ) .. "." )
+    ply:SendSoundEffect( "cave_adventure/vendor_buy.wav" )
+end )
+
+util.AddNetworkString( "CaveAdventure.RequestVendorSell" )
+net.Receive( "CaveAdventure.RequestVendorSell", function( len, ply )
+    local slot = net.ReadUInt( 8 )
+    if( not slot ) then return end
+    
+    local inventory = ply:GetInventory()
+    if( not inventory[slot] ) then return end
+
+    local itemKey, amount = inventory[slot][1], inventory[slot][2]
+
+    local itemCfg = CAVEADVENTURE.CONFIG.Items[itemKey]
+    if( not itemCfg ) then return end
+
+    local sellMoney = amount*(itemCfg.SellPrice)
+    ply:AddMoney( sellMoney )
+
+    ply:SendChatNotification( Color( 50, 255, 50 ), "[VENDOR]", Color( 255, 255, 255 ), "Sold x" .. amount .. " " .. itemCfg.Name .. " for " .. CAVEADVENTURE.FUNC.FormatMoneyText( sellMoney ) .. "." )
+    ply:SendSoundEffect( "cave_adventure/vendor_sell.wav" )
+
+    inventory[slot] = nil
+
+    ply.CAVEADVENTURE_INVENTORY = inventory
+    ply:SendInventoryItems( { slot } )
+    ply:SaveInventorySlotsToDB( { slot } )
 end )
