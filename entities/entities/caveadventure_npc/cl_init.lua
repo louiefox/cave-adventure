@@ -26,3 +26,18 @@ function ENT:Draw()
 		draw.SimpleText( configTable.Name, "MontserratBold70", 0, yPos, CAVEADVENTURE.FUNC.GetTheme( 4 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )	
 	cam.End3D2D()
 end
+
+net.Receive( "CaveAdventure.SendUseNPC", function()
+	local configKey = net.ReadString()
+	local configTable = CAVEADVENTURE.CONFIG.NPCs[configKey]
+	if( not configTable or not configTable.Options ) then return end
+
+	if( table.Count( configTable.Options ) > 1 ) then
+
+	else
+		local optionType = table.GetKeys( configTable.Options )[1]
+
+		local optionTypeCfg = CAVEADVENTURE.DEVCONFIG.NPCs[optionType]
+		optionTypeCfg.UseFunction( configKey )
+	end
+end )

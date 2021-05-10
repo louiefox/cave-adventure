@@ -75,10 +75,14 @@ function PANEL:CreateCloseButton()
     end
 end
 
-function PANEL:Open()
+function PANEL:Open( disablePopup, enableKeyboard )
+    if( not disablePopup ) then
+        self:MakePopup()
+    end
+
     self:SetVisible( true )
-    gui.EnableScreenClicker( true )
-    self.open = true
+    self:SetMouseInputEnabled( true )
+    self:SetKeyboardInputEnabled( enableKeyboard )
 
     if( self.onOpen ) then
         self.onOpen()
@@ -92,8 +96,8 @@ function PANEL:Open()
 end
 
 function PANEL:Close()
-    self.open = false
-    gui.EnableScreenClicker( false )
+    self:SetMouseInputEnabled( false )
+    self:SetKeyboardInputEnabled( false )
 
     if( self.onClose ) then
         self.onClose()
@@ -131,12 +135,6 @@ function PANEL:SetTargetSize( w, h )
     self.targetH = self.headerSize+h
 end
 
-function PANEL:Think()
-    if( not vgui.CursorVisible() and self.open ) then
-        gui.EnableScreenClicker( true )
-    end
-end
-
 function PANEL:Paint( w, h )
     BSHADOWS.BeginShadow( "menu_" .. self.header )
     BSHADOWS.SetShadowSize( "menu_" .. self.header, w, h )
@@ -145,4 +143,4 @@ function PANEL:Paint( w, h )
     BSHADOWS.EndShadow( "menu_" .. self.header, x, y, 1, 2, 2, 255, 0, 0, false )
 end
 
-vgui.Register( "caveadventure_frame", PANEL, "DPanel" )
+vgui.Register( "caveadventure_frame", PANEL, "EditablePanel" )

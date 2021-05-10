@@ -25,18 +25,14 @@ function PANEL:SetStartCenter( x, y )
 end
 
 function PANEL:Open()
-    self.frame:Open()
+    self.frame:Open( true )
 end
 
 function PANEL:Close()
     self.frame:Close()
 
     self:AlphaTo( 0, 0.2, 0, function() 
-        local oldX, oldY = input.GetCursorPos()
-
         self:Remove() 
-
-        timer.Simple( 0, function() input.SetCursorPos( oldX, oldY ) end )
     end )
 end
 

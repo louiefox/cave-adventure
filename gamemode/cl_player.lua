@@ -3,6 +3,10 @@ net.Receive( "CaveAdventure.SendUserID", function()
     CAVEADVENTURE_USERID = net.ReadUInt( 10 )
 end )
 
+net.Receive( "CaveAdventure.SendChatNotification", function()
+    chat.AddText( net.ReadColor(), net.ReadString(), " ", net.ReadColor(), net.ReadString() )
+end )
+
 -- MONEY FUNCTIONS --
 net.Receive( "CaveAdventure.SendMoney", function()
     CAVEADVENTURE_MONEY = net.ReadUInt( 32 ) or 0

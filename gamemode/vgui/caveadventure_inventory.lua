@@ -8,7 +8,9 @@ function PANEL:Init()
     self.top:SetTall( 30 )
     self.top:DockMargin( 10, 10, 10, 0 )
     self.top.Paint = function( self2, w, h )
-        draw.RoundedBox( 8, 0, 0, w, h, CAVEADVENTURE.FUNC.GetTheme( 2, 100 ) )
+        draw.RoundedBox( 8, 0, 0, w, h, CAVEADVENTURE.FUNC.GetTheme( 2 ) )
+        draw.RoundedBox( 8, 1, 1, w-2, h-2, CAVEADVENTURE.FUNC.GetTheme( 1 ) )
+        draw.RoundedBox( 8, 1, 1, w-2, h-2, CAVEADVENTURE.FUNC.GetTheme( 2, 100 ) )
     end
 
     local moneyPanel = vgui.Create( "caveadventure_money", self.top )

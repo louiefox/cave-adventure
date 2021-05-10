@@ -23,7 +23,7 @@ function PANEL:Paint( w, h )
             surface.SetMaterial( gradientMat )
             surface.DrawTexturedRect( 0, 0, w, h )
 
-            surface.SetDrawColor( self.rarityConfig[4].r, self.rarityConfig[4].g, self.rarityConfig[4].b, self.alpha )
+            surface.SetDrawColor( self.rarityConfig[4].r, self.rarityConfig[4].g, self.rarityConfig[4].b, self.alphaOverride or self.alpha )
             surface.SetMaterial( gradientMat )
             surface.DrawTexturedRect( 0, 0, w, h )
         end )

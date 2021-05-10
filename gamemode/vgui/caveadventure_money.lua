@@ -1,12 +1,15 @@
 local PANEL = {}
 
 function PANEL:Init()
-    self:SetWide( 0 )
+
 end
 
 local coinMat = Material( "cave_adventure/icons/coin.png" )
 local cGold, cSilver, cCopper = Color( 181, 151, 40 ), Color( 159, 159, 159 ), Color( 149, 84, 48 )
 function PANEL:SetMoneyAmount( money, onlyShowHave )
+    self:Clear()
+    self:SetWide( 0 )
+    
     local gold, silver, copper = CAVEADVENTURE.FUNC.GetMoneyTable( money )
 
     local coins = { 
@@ -28,11 +31,11 @@ function PANEL:SetMoneyAmount( money, onlyShowHave )
         coinPanel:SetWide( textX+3+iconSize )
         coinPanel:DockMargin( 0, 0, 10, 0 )
         coinPanel.Paint = function( self2, w, h )
-            draw.SimpleText( v[1], "MontserratMedium20", 0, (h/2), CAVEADVENTURE.FUNC.GetTheme( 4 ), 0, TEXT_ALIGN_CENTER )
+            draw.SimpleText( v[1], "MontserratMedium20", 0, (h/2)-1, CAVEADVENTURE.FUNC.GetTheme( 4 ), 0, TEXT_ALIGN_CENTER )
 
             surface.SetDrawColor( v[2] )
             surface.SetMaterial( coinMat )
-            surface.DrawTexturedRect( textX+3, (h/2)-(iconSize/2)+1, iconSize, iconSize )
+            surface.DrawTexturedRect( textX+3, (h/2)-(iconSize/2), iconSize, iconSize )
         end
 
         self:SetWide( self:GetWide()+coinPanel:GetWide()+(self:GetWide() > 0 and 10 or 0) )

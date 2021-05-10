@@ -10,6 +10,17 @@ function player_meta:SetUserID( userID )
     net.Send( self )
 end
 
+util.AddNetworkString( "CaveAdventure.SendChatNotification" )
+function player_meta:SendChatNotification( tagColor, tagString, msgColor, msgString )
+    local whiteColor = Color( 255, 255, 255 )
+	net.Start( "CaveAdventure.SendChatNotification" )
+		net.WriteColor( tagColor or whiteColor )
+		net.WriteString( tagString or "" )
+		net.WriteColor( msgColor or whiteColor )
+		net.WriteString( msgString or "" )
+	net.Send( self )
+end
+
 -- CAVE FUNCTIONS --
 function player_meta:TeleportToCave( caveKey )
     local cave = CAVEADVENTURE.TEMP.Caves[caveKey]

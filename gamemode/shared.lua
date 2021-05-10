@@ -43,3 +43,25 @@ function CAVEADVENTURE.FUNC.GetMoneyTable( money )
 
     return gold, silver, money
 end
+
+function CAVEADVENTURE.FUNC.FormatMoneyText( money )
+    local gold, silver, copper = CAVEADVENTURE.FUNC.GetMoneyTable( money )
+    local coins = {
+        { gold, "Gold" },
+        { silver, "Silver" },
+        { copper, "Copper" }
+    }
+
+    local moneyString = ""
+    for k, v in ipairs( coins ) do
+        if( v[1] <= 0 ) then continue end
+
+        if( moneyString == "" ) then
+            moneyString = v[1] .. " " .. v[2]
+        else
+            moneyString = moneyString .. ", " .. v[1] .. " " .. v[2]
+        end
+    end
+
+    return moneyString
+end

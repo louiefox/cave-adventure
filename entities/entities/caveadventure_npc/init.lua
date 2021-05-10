@@ -21,20 +21,18 @@ function ENT:ConfigKeyChanged( name, old, configKey )
 	end
 end
 
+util.AddNetworkString( "CaveAdventure.SendUseNPC" )
 function ENT:Use( ply )
-	if( not ply:IsPlayer() ) then return end
+	if( not ply:IsPlayer() or (ply.CAVEADVENTURE_NPC_COOLDOWN or 0) > CurTime() ) then return end
+	ply.CAVEADVENTURE_NPC_COOLDOWN = CurTime()+1
 
-	local configTable = CAVEADVENTURE.CONFIG.NPCs[self:GetConfigKey() or ""]
+	local configKey = self:GetConfigKey() or ""
+	local configTable = CAVEADVENTURE.CONFIG.NPCs[configKey]
 	if( not configTable or not configTable.Options ) then return end
 
-	if( table.Count( configTable.Options ) > 1 ) then
-
-	else
-		local optionType = table.GetKeys( configTable.Options )[1]
-
-		local optionTypeCfg = CAVEADVENTURE.DEVCONFIG.NPCs[optionType]
-		optionTypeCfg.UseFunction( configTable, configTable.Options[optionType] )
-	end
+	net.Start( "CaveAdventure.SendUseNPC" )
+		net.WriteString( configKey )
+	net.Send( ply )
 end
 
 function ENT:OnTakeDamage( dmgInfo )

@@ -2,8 +2,8 @@ local PANEL = {}
 
 function PANEL:Init()
     self:SetSize( 50, 50 )
-    self:SetZPos( 100 )
     self:DockPadding( 15, 10, 15, 10 )
+    self:SetDrawOnTop( true )
 end
 
 function PANEL:SetItemInfo( itemKey, amount )

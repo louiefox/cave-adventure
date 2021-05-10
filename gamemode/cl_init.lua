@@ -11,6 +11,7 @@ include( "cl_player.lua" )
 include( "cl_inventory.lua" )
 include( "cl_derma_popups.lua" )
 include( "cl_monsters.lua" )
+include( "cl_vendors.lua" )
 
 -- VGUI LOAD --
 for k, v in pairs( file.Find( GM.FolderName .. "/gamemode/vgui/*.lua", "LUA" ) ) do
@@ -20,6 +21,16 @@ end
 concommand.Add( "caveadventure_removeonclose", function()
     CAVEADVENTURE.TEMP.RemoveOnClose = not CAVEADVENTURE.TEMP.RemoveOnClose
 end )
+
+function CAVEADVENTURE.FUNC.OpenInventory()
+    if( IsValid( CAVEADVENTURE.TEMP.InvMenu ) ) then
+        if( not CAVEADVENTURE.TEMP.InvMenu:IsVisible() ) then
+            CAVEADVENTURE.TEMP.InvMenu:Open()
+        end
+    else
+        CAVEADVENTURE.TEMP.InvMenu = vgui.Create( "caveadventure_inventory" )
+    end
+end
 
 hook.Add( "PlayerButtonDown", "CaveAdventure.PlayerButtonDown.Menues", function( ply, button )
 	if( button != KEY_B ) then return end

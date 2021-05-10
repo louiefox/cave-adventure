@@ -16,6 +16,7 @@ AddCSLuaFile( "cl_player.lua" )
 AddCSLuaFile( "cl_inventory.lua" )
 AddCSLuaFile( "cl_derma_popups.lua" )
 AddCSLuaFile( "cl_monsters.lua" )
+AddCSLuaFile( "cl_vendors.lua" )
 
 -- SERVER LOAD --
 include( "sv_cavegen.lua" )
@@ -23,6 +24,7 @@ include( "sv_player.lua" )
 include( "sv_sqllite.lua" )
 include( "sv_inventory.lua" )
 include( "sv_admin.lua" )
+include( "sv_vendors.lua" )
 
 -- VGUI LOAD --
 for k, v in pairs( file.Find( GM.FolderName .. "/gamemode/vgui/*.lua", "LUA" ) ) do

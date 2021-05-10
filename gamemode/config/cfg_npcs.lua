@@ -7,12 +7,12 @@ CAVEADVENTURE.CONFIG.NPCs = {
         Options = {
             ["vendor"] = {
                 Items = { 
-                    ["potion_health_l"] = { 1500, 1 },
-                    ["potion_health_m"] = { 375, 1 },
-                    ["potion_health_s"] = { 150, 4 },
-                    ["potion_mana_l"] = { 1500, 1 },
-                    ["potion_mana_m"] = { 375, 1 },
-                    ["potion_mana_s"] = { 150, 4 }
+                    { "potion_health_l", 1500, 1 },
+                    { "potion_mana_l", 1500, 1 },
+                    { "potion_health_m", 375, 1 },
+                    { "potion_mana_m", 375, 1 },
+                    { "potion_health_s", 150, 4 },
+                    { "potion_mana_s", 150, 4 }
                 }
             }
         }
