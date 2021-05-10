@@ -33,7 +33,7 @@ function PANEL:SetItemInfo( itemKey, amount )
         local moneyPanel = vgui.Create( "caveadventure_money", sellPricePanel )
         moneyPanel:Dock( LEFT )
         moneyPanel:DockMargin( textX+10, 0, 0, 0 )
-        moneyPanel:SetMoneyAmount( itemConfig.SellPrice*amount )
+        moneyPanel:SetMoneyAmount( itemConfig.SellPrice*amount, true )
 
         sellPricePanel:SetWide( textX+10+moneyPanel:GetWide() )
         self:AddInfo( sellPricePanel )

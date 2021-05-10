@@ -18,10 +18,13 @@ local function AddSharedFile( filePath )
 end
 
 AddSharedFile( "config/cfg_main.lua" )
+AddSharedFile( "config/cfg_caves.lua" )
 AddSharedFile( "config/cfg_items.lua" )
 AddSharedFile( "config/cfg_monsters.lua" )
+AddSharedFile( "config/cfg_npcs.lua" )
 
 AddSharedFile( "sh_player.lua" )
+AddSharedFile( "sh_devconfig.lua" )
 
 function GM:Initialize()
 

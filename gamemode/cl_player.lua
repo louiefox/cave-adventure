@@ -3,6 +3,13 @@ net.Receive( "CaveAdventure.SendUserID", function()
     CAVEADVENTURE_USERID = net.ReadUInt( 10 )
 end )
 
+-- MONEY FUNCTIONS --
+net.Receive( "CaveAdventure.SendMoney", function()
+    CAVEADVENTURE_MONEY = net.ReadUInt( 32 ) or 0
+
+    hook.Run( "CaveAdventure.Hooks.MoneyUpdated" )
+end )
+
 -- INVENTORY FUNCTIONS --
 net.Receive( "CaveAdventure.SendInventory", function()
     CAVEADVENTURE_INVENTORY = net.ReadTable() or {}

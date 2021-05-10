@@ -3,6 +3,23 @@ local PANEL = {}
 function PANEL:Init()
     self:SetHeader( "BACKPACK" )
 
+    self.top = vgui.Create( "DPanel", self )
+    self.top:Dock( TOP )
+    self.top:SetTall( 30 )
+    self.top:DockMargin( 10, 10, 10, 0 )
+    self.top.Paint = function( self2, w, h )
+        draw.RoundedBox( 8, 0, 0, w, h, CAVEADVENTURE.FUNC.GetTheme( 2, 100 ) )
+    end
+
+    local moneyPanel = vgui.Create( "caveadventure_money", self.top )
+    moneyPanel:Dock( RIGHT )
+    moneyPanel:DockMargin( 0, 0, 10, 0 )
+    moneyPanel:SetMoneyAmount( LocalPlayer():GetMoney() )
+
+    hook.Add( "CaveAdventure.Hooks.MoneyUpdated", self, function()
+        moneyPanel:SetMoneyAmount( LocalPlayer():GetMoney() )
+    end )
+
     self.slotSpacing = 5
 
     self.grid = vgui.Create( "DIconLayout", self )
@@ -84,7 +101,7 @@ function PANEL:RefreshSlots()
         self.slotPanels[i] = slot
     end
 
-    self:SetTargetSize( ScrW()*0.15, 20+(math.ceil( slotCount/slotsWide )*(slotSize+self.slotSpacing))-self.slotSpacing )
+    self:SetTargetSize( ScrW()*0.15, 10+self.top:GetTall()+20+(math.ceil( slotCount/slotsWide )*(slotSize+self.slotSpacing))-self.slotSpacing )
 end
 
 local gradientMat = Material( "cave_adventure/gradient_box.png" )

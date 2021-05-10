@@ -17,7 +17,8 @@ end
 if( not sql.TableExists( "caveadventure_players" ) ) then
 	CAVEADVENTURE.FUNC.SQLQuery( [[ CREATE TABLE caveadventure_players ( 
 		userID INTEGER PRIMARY KEY AUTOINCREMENT,
-		steamID64 varchar(20) NOT NULL UNIQUE
+		steamID64 varchar(20) NOT NULL UNIQUE,
+		money int
 	); ]] )
 end
 

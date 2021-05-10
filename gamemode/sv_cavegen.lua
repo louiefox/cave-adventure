@@ -1,4 +1,4 @@
-CAVE = CAVE or {}
+CAVEADVENTURE.TEMP.Caves = CAVEADVENTURE.TEMP.Caves or {}
 
 local room_meta = {
     Remove = function( self )
@@ -21,7 +21,7 @@ local room_meta = {
         end
     end,
     GetPos = function( self )
-        return CAVE.GRID:GetRoomPos( self.x, self.y )
+        return self.Cave:GetRoomPos( self.x, self.y )
     end,
     AddDoorWay = function( self, wallKey, noDoor )
         local wall = self.Walls[wallKey]
@@ -62,8 +62,9 @@ local room_meta = {
             door:SetPos( pos+Vector( 0, 0, -69.8 ) )
             door:SetAngles( angles+Angle( 90, 0, 0 ) )
             door:Spawn()
-            door.room = self
-            door.wallKey = wallKey
+            door.Cave = self.Cave
+            door.Room = self
+            door.WallKey = wallKey
             wallEnts.Door = door
         end
 
@@ -100,14 +101,14 @@ local room_meta = {
             local change = ((i == 2 or i == 3) and 1) or -1
 
             local x, y = self.x+(axis == "X" and change or 0), self.y+(axis == "Y" and change or 0)
-            local bound = math.floor( CAVE.GRID.Size/2 )
+            local bound = math.floor( self.Cave.Size/2 )
 
-            if( x > bound or x < -bound or y > bound or y < -bound or CAVE.GRID:RoomExists( x, y ) or CAVE.GRID:RoomExistsAroundCoords( x, y, self.x, self.y, true ) ) then continue end
+            if( x > bound or x < -bound or y > bound or y < -bound or self.Cave:RoomExists( x, y ) or self.Cave:RoomExistsAroundCoords( x, y, self.x, self.y, true ) ) then continue end
 
             self:AddDoorWay( i )
         end
 
-        self.NavArea = navmesh.CreateNavArea( self.Floor:GetPos()+Vector( CAVE.GRID.RoomSize/2, CAVE.GRID.RoomSize/2, 0 ), self.Floor:GetPos()-Vector( CAVE.GRID.RoomSize/2, CAVE.GRID.RoomSize/2, 0 ) )
+        self.NavArea = navmesh.CreateNavArea( self.Floor:GetPos()+Vector( self.Cave.RoomSize/2, self.Cave.RoomSize/2, 0 ), self.Floor:GetPos()-Vector( self.Cave.RoomSize/2, self.Cave.RoomSize/2, 0 ) )
 
         local zombie = ents.Create( "cave_monster_zombie" )
         zombie:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
@@ -122,8 +123,6 @@ local room_meta = {
 room_meta.__index = room_meta
 
 local grid_meta = {
-    Rooms = {},
-    CorridorEnts = {},
     Clear = function( self )
         for k, v in pairs( self.Rooms ) do
             v:Remove()
@@ -147,9 +146,6 @@ local grid_meta = {
             return false
         end
     end,
-    GetRoom = function( self, xCordinate, yCordinate )
-        return self.Rooms[self:CoordinatesToKey( xCordinate, yCordinate )]
-    end,
     RoomExistsAroundCoords = function( self, coordX, coordY, excludeX, excludeY, excludeSpawn )
         for i = 1, 4 do
             local axis = ((i == 1 or i == 3) and "X") or ((i == 2 or i == 4) and "Y")
@@ -157,22 +153,30 @@ local grid_meta = {
 
             local x, y = coordX+(axis == "X" and change or 0), coordY+(axis == "Y" and change or 0)
 
-            local room = CAVE.GRID:GetRoom( x, y )
-            if( not ((excludeX and x == excludeX) or (excludeY and y == excludeY)) and room and not (excludeSpawn and room.SpawnRoom) ) then
-                return true
-            end
+            local bound = (self.Size-1)/2
+            if( x > bound or x < -bound or y > bound or y < -bound ) then continue end
+
+            local room = self:GetRoom( x, y )
+            if( not room ) then continue end
+
+            if( excludeSpawn and room.SpawnRoom ) then continue end
+
+            if( (excludeX and x == excludeX) and (excludeY and y == excludeY) ) then continue end
+
+            return true
         end
     end,
     GetRoomPos = function( self, xCordinate, yCordinate )
         return Vector( self.StartPos[1]+(xCordinate*(self.RoomSize+self.RoomSpacing)), self.StartPos[2]+(yCordinate*(self.RoomSize+self.RoomSpacing)), self.StartPos[3] )
     end,
     GetRoom = function( self, xCordinate, yCordinate )
-        return self.Rooms[self:CoordinatesToKey( xCordinate, yCordinate ) or 0]
+        return self.Rooms[self:CoordinatesToKey( xCordinate, yCordinate )]
     end,
     AddRoom = function( self, xCordinate, yCordinate )
         if( self:RoomExists( xCordinate, yCordinate ) ) then return end
 
         local room = {
+            Cave = self,
             Walls = {},
             x = xCordinate,
             y = yCordinate
@@ -299,32 +303,34 @@ local grid_meta = {
 
 grid_meta.__index = grid_meta
 
-function CAVEADVENTURE.FUNC.SpawnCave()
-    if( CAVE.GRID ) then
-        CAVE.GRID:Clear()
+function CAVEADVENTURE.FUNC.SpawnCave( caveKey )
+    local caveCfg = CAVEADVENTURE.CONFIG.Caves[caveKey]
+
+    if( CAVEADVENTURE.TEMP.Caves[caveKey] ) then
+        CAVEADVENTURE.TEMP.Caves[caveKey]:Clear()
     end
     
-    CAVE.GRID = {
-        Size = 5,
-        StartPos = Vector( 0, 0, 300 ),
+    local newCave = {
+        Size = caveCfg.Size,
+        StartPos = caveCfg.StartPos,
+        Rooms = {},
+        CorridorEnts = {},
         RoomSize = 380,
         RoomSpacing = 379
     }
     
-    setmetatable( CAVE.GRID, grid_meta )
+    setmetatable( newCave, grid_meta )
 
-    CAVE.GRID:Clear()
-
-    local room1 = CAVE.GRID:AddRoom( 0, 0 )
+    local room1 = newCave:AddRoom( 0, 0 )
     room1:AddDoorWay( 2 )
     room1:SetSpawnRoom()
 
-    for k, v in ipairs( player.GetAll() ) do
-        v:TeleportToSpawn()
-    end
+    CAVEADVENTURE.TEMP.Caves[caveKey] = newCave
 end
 
-concommand.Add( "spawn_cave", function( ply )
+concommand.Add( "spawn_cave", function( ply, cmd, args )
     if( IsValid( ply ) and not ply:IsSuperAdmin() ) then return end
-    CAVEADVENTURE.FUNC.SpawnCave()
+    CAVEADVENTURE.FUNC.SpawnCave( tonumber( args[1] or "" ) or 1 )
+
+    ply:TeleportToCave( tonumber( args[1] or "" ) or 1 )
 end )

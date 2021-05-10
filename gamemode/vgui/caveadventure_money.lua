@@ -6,7 +6,7 @@ end
 
 local coinMat = Material( "cave_adventure/icons/coin.png" )
 local cGold, cSilver, cCopper = Color( 181, 151, 40 ), Color( 159, 159, 159 ), Color( 149, 84, 48 )
-function PANEL:SetMoneyAmount( money )
+function PANEL:SetMoneyAmount( money, onlyShowHave )
     local gold, silver, copper = CAVEADVENTURE.FUNC.GetMoneyTable( money )
 
     local coins = { 
@@ -18,7 +18,7 @@ function PANEL:SetMoneyAmount( money )
 	surface.SetFont( "MontserratMedium20" )
 
 	for k, v in ipairs( coins ) do
-        if( v[1] <= 0 ) then continue end
+        if( v[1] <= 0 and onlyShowHave ) then continue end
         
 		local textX, textY = surface.GetTextSize( v[1] )
         local iconSize = CAVEADVENTURE.FUNC.ScreenScale( 16 )

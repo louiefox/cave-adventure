@@ -10,9 +10,35 @@ function player_meta:SetUserID( userID )
     net.Send( self )
 end
 
-function player_meta:TeleportToSpawn()
-    self:SetPos( CAVE.GRID.StartPos+Vector( 0, 0, 10 ) )
+-- CAVE FUNCTIONS --
+function player_meta:TeleportToCave( caveKey )
+    local cave = CAVEADVENTURE.TEMP.Caves[caveKey]
+    if( not cave ) then return end
+
+    self:SetPos( cave.StartPos+Vector( 0, 0, 10 ) )
     self:SetEyeAngles( Angle( 0, 90, 0 ) )
+end
+
+-- MONEY FUNCTIONS --
+util.AddNetworkString( "CaveAdventure.SendMoney" )
+function player_meta:SetMoney( money )
+    money = math.max( 0, money )
+    
+    self.CAVEADVENTURE_MONEY = money
+
+    net.Start( "CaveAdventure.SendMoney" )
+        net.WriteUInt( money, 32 )
+    net.Send( self )
+
+    CAVEADVENTURE.FUNC.SQLQuery( "UPDATE caveadventure_players SET money = " .. money .. " WHERE userID = '" .. self:GetUserID() .. "';" )
+end
+
+function player_meta:AddMoney( amount )
+    self:SetMoney( self:GetMoney()+amount )
+end
+
+function player_meta:TakeMoney( amount )
+    self:SetMoney( self:GetMoney()-amount )
 end
 
 -- INVENTORY FUNCTIONS --

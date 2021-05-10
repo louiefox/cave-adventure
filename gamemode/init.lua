@@ -40,6 +40,7 @@ function GM:PlayerInitialSpawn( ply )
         if( data ) then
             local userID = tonumber( data.userID )
             ply:SetUserID( userID )
+            ply:SetMoney( tonumber( data.money or "" ) or 0 )
 
             CAVEADVENTURE.FUNC.SQLQuery( "SELECT * FROM caveadventure_inventory WHERE userID = '" .. userID .. "';", function( data )
                 if( not data ) then return end
@@ -58,6 +59,7 @@ function GM:PlayerInitialSpawn( ply )
                     if( data ) then
                         local userID = tonumber( data.userID )
                         ply:SetUserID( userID )
+                        ply:SetMoney( 50 )
                     else
                         ply:Kick( "ERROR: Could not create unique UserID, try rejoining!\n\nReport your error here: discord.gg/sQHyPj3p84" )
                     end
@@ -72,8 +74,6 @@ function GM:PlayerSpawn( ply, transiton )
 
     ply:SetHealth( ply:GetMaxHealth() )
     ply:SetCollisionGroup( 11 )
-
-    ply:TeleportToSpawn()
 end
 
 function GM:PlayerLoadout( ply )
@@ -91,15 +91,23 @@ hook.Add( "PlayerNoClip", "CaveAdventure.PlayerNoClip.NoClip", function( ply, de
 	end
 end )
 
-hook.Add( "InitPostEntity", "CaveAdventure.InitPostEntity.CaveGen", function()
-    CAVEADVENTURE.FUNC.SpawnCave()
+hook.Add( "Think", "CaveAdventure.Think.Caves", function()
+	if( not CAVEADVENTURE.TEMP.Caves ) then return end
+
+    for k, v in pairs( CAVEADVENTURE.TEMP.Caves ) do
+        for key, val in pairs( v.Rooms or {} ) do
+            if( not val.Think ) then continue end
+            val:Think()
+        end
+    end
 end )
 
-hook.Add( "Think", "CaveAdventure.Think.Caves", function()
-	if( CAVE.GRID ) then
-        for k, v in pairs( CAVE.GRID.Rooms or {} ) do
-            if( not v.Think ) then continue end
-            v:Think()
-        end
+hook.Add( "InitPostEntity", "CaveAdventure.InitPostEntity.NPCs", function()
+    for k, v in pairs( CAVEADVENTURE.CONFIG.NPCs ) do
+        local npc = ents.Create( "caveadventure_npc" )
+        npc:SetPos( v.Position )
+        npc:SetAngles( v.Angles )
+        npc:SetConfigKey( k )
+        npc:Spawn()
     end
 end )
