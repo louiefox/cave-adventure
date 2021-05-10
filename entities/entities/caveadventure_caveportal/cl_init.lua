@@ -1,5 +1,9 @@
 include( "shared.lua" )
 
+function ENT:Draw()
+
+end
+
 CAVEADVENTURE.TEMP.Portals = CAVEADVENTURE.TEMP.Portals or {}
 function ENT:Initialize()
     CAVEADVENTURE.TEMP.Portals = CAVEADVENTURE.TEMP.Portals or {}
@@ -11,6 +15,16 @@ function ENT:OnRemove()
 	CAVEADVENTURE.TEMP.Portals[self] = nil
 end
 
+function ENT:Think()
+    if( self.ParticleEffect ) then return end
+
+    local caveKey = self:GetCaveKey()
+    local caveCfg = CAVEADVENTURE.CONFIG.Caves[caveKey or 0]
+    if( not caveCfg ) then return end
+    
+    self.ParticleEffect = CreateParticleSystem( self, caveCfg.PortalParticle, PATTACH_ABSORIGIN_FOLLOW, 0, Vector( 0, 0, 0 ) )
+end
+
 hook.Add( "HUDPaint", "CaveAdventure.HUDPaint.Portals", function()
 	local ply = LocalPlayer()
     for k, v in pairs( CAVEADVENTURE.TEMP.Portals or {} ) do
@@ -20,7 +34,7 @@ hook.Add( "HUDPaint", "CaveAdventure.HUDPaint.Portals", function()
         end
 
 		local distance = ply:GetPos():DistToSqr( k:GetPos() )
-		if( distance > 200000 ) then continue end
+		if( distance > 300000 ) then continue end
 
 		local caveKey = k:GetCaveKey()
 		local caveCfg = CAVEADVENTURE.CONFIG.Caves[caveKey or 0]
@@ -31,7 +45,7 @@ hook.Add( "HUDPaint", "CaveAdventure.HUDPaint.Portals", function()
 
         local pos2d = pos:ToScreen()
 
-        draw.SimpleTextOutlined( caveCfg.Name, "MontserratBold40", pos2d.x, pos2d.y+5, CAVEADVENTURE.FUNC.GetTheme( 4 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 1, CAVEADVENTURE.FUNC.GetTheme( 1 ) )
-        draw.SimpleTextOutlined( "Level " .. caveCfg.Level, "MontserratBold25", pos2d.x, pos2d.y-5, CAVEADVENTURE.FUNC.GetTheme( 3 ), TEXT_ALIGN_CENTER, 0, 1, CAVEADVENTURE.FUNC.GetTheme( 1 ) )
+        draw.SimpleTextOutlined( caveCfg.Name, "MontserratBold40", pos2d.x, pos2d.y+2, CAVEADVENTURE.FUNC.GetTheme( 4 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 1, CAVEADVENTURE.FUNC.GetTheme( 1 ) )
+        draw.SimpleTextOutlined( "Level " .. caveCfg.Level, "MontserratBold25", pos2d.x, pos2d.y-2, CAVEADVENTURE.FUNC.GetTheme( 3 ), TEXT_ALIGN_CENTER, 0, 1, CAVEADVENTURE.FUNC.GetTheme( 1 ) )
     end
 end )

@@ -115,7 +115,6 @@ function CAVEADVENTURE.FUNC.SpawnPortals()
     for k, v in pairs( CAVEADVENTURE.CONFIG.Caves ) do
         local portal = ents.Create( "caveadventure_caveportal" )
         portal:SetPos( v.PortalPos )
-        portal:SetAngles( v.PortalAngles )
         portal:Spawn()
         portal:SetCaveKey( k )
 
