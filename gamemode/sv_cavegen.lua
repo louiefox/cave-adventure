@@ -4,7 +4,7 @@ local room_meta = {
     Remove = function( self )
         self.Floor:Remove()
         self.Ceiling:Remove()
-        self.SpawnPortal:Remove()
+        if( IsValid( self.SpawnPortal ) ) then self.SpawnPortal:Remove() end
         
         if( self.Monsters ) then
             for k, v in ipairs( self.Monsters ) do
@@ -122,9 +122,6 @@ local room_meta = {
         self.Monsters = {
             zombie
         }
-    end,
-    SetSpawnRoom = function( self )
-        self.SpawnRoom = true
     end
 }
 
@@ -180,14 +177,15 @@ local grid_meta = {
     GetRoom = function( self, xCordinate, yCordinate )
         return self.Rooms[self:CoordinatesToKey( xCordinate, yCordinate )]
     end,
-    AddRoom = function( self, xCordinate, yCordinate )
+    AddRoom = function( self, xCordinate, yCordinate, spawnRoom )
         if( self:RoomExists( xCordinate, yCordinate ) ) then return end
 
         local room = {
             Cave = self,
             Walls = {},
             x = xCordinate,
-            y = yCordinate
+            y = yCordinate,
+            SpawnRoom = spawnRoom
         }
 
         local pos = self:GetRoomPos( xCordinate, yCordinate )
@@ -238,10 +236,12 @@ local grid_meta = {
         ceiling:Spawn()
         room.Ceiling = ceiling
 
-        local portal = ents.Create( "caveadventure_spawnportal" )
-        portal:SetPos( pos+Vector( 0, -150, 50 ) )
-        portal:Spawn()
-        room.SpawnPortal = portal
+        if( spawnRoom ) then
+            local portal = ents.Create( "caveadventure_spawnportal" )
+            portal:SetPos( pos+Vector( 0, -150, 50 ) )
+            portal:Spawn()
+            room.SpawnPortal = portal
+        end
     
         setmetatable( room, room_meta )
         self.Rooms[self:CoordinatesToKey( xCordinate, yCordinate )] = room
@@ -359,9 +359,8 @@ function CAVEADVENTURE.FUNC.SpawnCave( caveKey )
     
     setmetatable( newCave, grid_meta )
 
-    local room1 = newCave:AddRoom( 0, 0 )
+    local room1 = newCave:AddRoom( 0, 0, true )
     room1:AddDoorWay( 2 )
-    room1:SetSpawnRoom()
 
     CAVEADVENTURE.TEMP.Caves[caveKey] = newCave
 
