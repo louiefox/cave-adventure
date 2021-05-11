@@ -13,7 +13,7 @@ function ENT:Initialize()
 end
 
 function ENT:Use()
-	if( not self.Cave or self.Used ) then return end
+	if( not self.Cave or self.Used or not self.Cave:CanOpenDoor() ) then return end
 	self.Used = true
 
 	local room = self.Room

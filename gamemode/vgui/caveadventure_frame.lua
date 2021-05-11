@@ -37,6 +37,7 @@ function PANEL:Init()
         self:UpdatePos()
     end
 
+    self:SetSize( 0, 0 )
     self:SetStartCenter( ScrW()/2, ScrH()/2 )
     self:SetTargetSize( ScrW()*0.6, ScrH()*0.5 )
 end

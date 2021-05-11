@@ -12,6 +12,7 @@ include( "cl_inventory.lua" )
 include( "cl_derma_popups.lua" )
 include( "cl_monsters.lua" )
 include( "cl_vendors.lua" )
+include( "cl_caves.lua" )
 
 -- VGUI LOAD --
 for k, v in pairs( file.Find( GM.FolderName .. "/gamemode/vgui/*.lua", "LUA" ) ) do

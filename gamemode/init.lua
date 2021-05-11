@@ -17,6 +17,7 @@ AddCSLuaFile( "cl_inventory.lua" )
 AddCSLuaFile( "cl_derma_popups.lua" )
 AddCSLuaFile( "cl_monsters.lua" )
 AddCSLuaFile( "cl_vendors.lua" )
+AddCSLuaFile( "cl_caves.lua" )
 
 -- SERVER LOAD --
 include( "sv_cavegen.lua" )
@@ -25,6 +26,7 @@ include( "sv_sqllite.lua" )
 include( "sv_inventory.lua" )
 include( "sv_admin.lua" )
 include( "sv_vendors.lua" )
+include( "sv_caves.lua" )
 
 -- VGUI LOAD --
 for k, v in pairs( file.Find( GM.FolderName .. "/gamemode/vgui/*.lua", "LUA" ) ) do
@@ -76,6 +78,11 @@ function GM:PlayerSpawn( ply, transiton )
 
     ply:SetHealth( ply:GetMaxHealth() )
     ply:SetCollisionGroup( 11 )
+
+    local caveKey = ply:GetActiveCave()
+    if( caveKey ) then 
+        ply:TeleportToCave( caveKey )
+    end
 end
 
 function GM:PlayerLoadout( ply )
@@ -132,17 +139,4 @@ hook.Add( "InitPostEntity", "CaveAdventure.InitPostEntity", function()
     end
 
     CAVEADVENTURE.FUNC.SpawnPortals()
-end )
-
-hook.Add( "PlayerDeath", "CaveAdventure.PlayerDeath", function( victim )
-    for k, v in pairs( CAVEADVENTURE.TEMP.Caves ) do
-        if( not (v.Players or {})[victim] ) then continue end
-
-        v.Players[victim] = nil
-
-        if( table.Count( v.Players ) <= 0 ) then
-            v:Clear()
-            CAVEADVENTURE.TEMP.Caves[k] = nil
-        end
-    end
 end )

@@ -13,10 +13,11 @@ function ENT:Initialize()
 end
 
 function ENT:Use( ply )
-	if( not ply:IsPlayer() or (ply.CAVEADVENTURE_DOOR_COOLDOWN or 0) > CurTime() ) then return end
-	ply.CAVEADVENTURE_DOOR_COOLDOWN = CurTime()+1
+	if( not ply:IsPlayer() or (ply.CAVEADVENTURE_PORTAL_COOLDOWN or 0) > CurTime() ) then return end
+	ply.CAVEADVENTURE_PORTAL_COOLDOWN = CurTime()+1
 
 	local caveKey = self:GetCaveKey()
+	if( CAVEADVENTURE.TEMP.Caves[caveKey] ) then return end
     
 	local cave = CAVEADVENTURE.FUNC.SpawnCave( caveKey )
 	cave:AddPlayer( ply )

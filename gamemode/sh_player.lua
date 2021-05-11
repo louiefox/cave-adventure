@@ -9,6 +9,11 @@ function player_meta:GetUserID()
 	end
 end
 
+-- CAVE FUNCTIONS --
+function player_meta:GetActiveCave()
+	return CLIENT and CAVEADVENTURE_ACTIVECAVE or self.CAVEADVENTURE_ACTIVECAVE
+end
+
 -- MONEY FUNCTIONS --
 function player_meta:GetMoney()
 	return (CLIENT and CAVEADVENTURE_MONEY or self.CAVEADVENTURE_MONEY) or 0

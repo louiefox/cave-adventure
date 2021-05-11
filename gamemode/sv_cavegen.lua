@@ -4,6 +4,7 @@ local room_meta = {
     Remove = function( self )
         self.Floor:Remove()
         self.Ceiling:Remove()
+        self.SpawnPortal:Remove()
         
         if( self.Monsters ) then
             for k, v in ipairs( self.Monsters ) do
@@ -236,6 +237,11 @@ local grid_meta = {
         ceiling:SetPos( pos+Vector( 0, 0, 167.5 ) )
         ceiling:Spawn()
         room.Ceiling = ceiling
+
+        local portal = ents.Create( "caveadventure_spawnportal" )
+        portal:SetPos( pos+Vector( 0, -150, 50 ) )
+        portal:Spawn()
+        room.SpawnPortal = portal
     
         setmetatable( room, room_meta )
         self.Rooms[self:CoordinatesToKey( xCordinate, yCordinate )] = room
@@ -308,7 +314,26 @@ local grid_meta = {
     end,
     AddPlayer = function( self, ply )
         self.Players[ply] = true
-        ply:TeleportToCave( self.CaveKey )
+        ply:AddToCave( self.CaveKey )
+    end,
+    RemovePlayer = function( self, ply )
+        self.Players[ply] = nil
+
+        if( table.Count( self.Players ) <= 0 ) then
+            self:Clear()
+            CAVEADVENTURE.TEMP.Caves[self.CaveKey] = nil
+        end
+
+        ply:RemoveFromCave( self.CaveKey )
+    end,
+    CanOpenDoor = function( self )
+        for k, v in pairs( self.Rooms ) do
+            for key, val in pairs( v.Monsters or {} ) do
+                if( IsValid( val ) ) then return false end
+            end
+        end
+
+        return true
     end
 }
 

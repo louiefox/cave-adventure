@@ -11,6 +11,11 @@ net.Receive( "CaveAdventure.SendSoundEffect", function()
     surface.PlaySound( net.ReadString() )
 end )
 
+-- CAVE FUNCTIONS --
+net.Receive( "CaveAdventure.SendActiveCave", function()
+    CAVEADVENTURE_ACTIVECAVE = net.ReadUInt( 4 )
+end )
+
 -- MONEY FUNCTIONS --
 net.Receive( "CaveAdventure.SendMoney", function()
     CAVEADVENTURE_MONEY = net.ReadUInt( 32 ) or 0
