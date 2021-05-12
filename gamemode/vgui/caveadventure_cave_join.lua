@@ -47,4 +47,4 @@ function PANEL:Paint( w, h )
     draw.SimpleTextOutlined( "Level " .. caveCfg.Level, "MontserratBold50", w/2, h, CAVEADVENTURE.FUNC.GetTheme( 3 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_BOTTOM, 2, CAVEADVENTURE.FUNC.GetTheme( 1 ) )
 end
 
-vgui.Register( "caveadventure_cave_notificaiton", PANEL, "DPanel" )
+vgui.Register( "caveadventure_cave_join", PANEL, "DPanel" )

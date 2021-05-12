@@ -116,13 +116,12 @@ local room_meta = {
     OnCompleted = function( self )
         local chest = ents.Create( "caveadventure_chest" )
         chest:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
+        chest:SetRewardPlayers( table.Copy( self.Cave.Players ) )
         chest:Spawn()
-        local chest2 = ents.Create( "caveadventure_chest" )
-        chest2:SetPos( self.Floor:GetPos()+Vector( 100, 0, 10 ) )
-        chest2:Spawn()
 
         table.insert( self.Entities, chest )
-        table.insert( self.Entities, chest2 )
+
+        self.Cave:CheckCompletion()
     end
 }
 
@@ -140,6 +139,29 @@ local grid_meta = {
         end
 
         self.Rooms = {}
+    end,
+    Delete = function( self )
+        self:Clear()
+        CAVEADVENTURE.TEMP.Caves[self.CaveKey] = nil
+
+        for k, v in pairs( self.Players or {} ) do
+            if( not IsValid( k ) ) then continue end
+            k:RemoveFromCave( self.CaveKey )
+        end
+    end,
+    CheckCompletion = function( self )
+        if( table.Count( self.Rooms ) < self.Size^2 ) then return end
+
+        local deleteTime = CurTime()+60
+        timer.Simple( deleteTime-CurTime(), function()
+            if( not self or not self.CaveKey or not CAVEADVENTURE.TEMP.Caves[self.CaveKey] ) then return end
+            self:Delete()
+        end )
+
+        net.Start( "CaveAdventure.SendCompletedCave" )
+            net.WriteUInt( self.CaveKey, 4 )
+            net.WriteUInt( deleteTime, 32 )
+        net.Send( table.GetKeys( self.Players ) )
     end,
     CoordinatesToKey = function( self, xCordinate, yCordinate )
         local row = (math.ceil( self.Size/2 )-yCordinate)
@@ -265,8 +287,7 @@ local grid_meta = {
         self.Players[ply] = nil
 
         if( table.Count( self.Players ) <= 0 ) then
-            self:Clear()
-            CAVEADVENTURE.TEMP.Caves[self.CaveKey] = nil
+            self:Delete()
         end
 
         ply:RemoveFromCave( self.CaveKey )

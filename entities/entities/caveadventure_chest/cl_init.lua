@@ -89,8 +89,8 @@ hook.Add( "KeyPress", "CaveAdventure.KeyPress.PickupChest", function( ply, key )
 		if( CurTime() < (CAVEADVENTURE_CHESTPICKUP_COOLDOWN or 0) ) then return end
 		CAVEADVENTURE_CHESTPICKUP_COOLDOWN = CurTime()+0.2
 
-		-- net.Start( "CAVEADVENTURE.Net.RequestPickup" )
-		-- 	net.WriteEntity( ent )
-		-- net.SendToServer()
+		net.Start( "CaveAdventure.Net.RequestChestLoot" )
+			net.WriteEntity( ent )
+		net.SendToServer()
 	end
 end )

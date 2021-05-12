@@ -11,6 +11,13 @@ net.Receive( "CaveAdventure.SendSoundEffect", function()
     surface.PlaySound( net.ReadString() )
 end )
 
+net.Receive( "CaveAdventure.SendTeleportTransition", function()
+    local endTime = net.ReadUInt( 32 )
+
+    local transition = vgui.Create( "caveadventure_teleport_transition" )
+    transition:SetEndTime( endTime )
+end )
+
 -- CAVE FUNCTIONS --
 net.Receive( "CaveAdventure.SendActiveCave", function()
     CAVEADVENTURE_ACTIVECAVE = net.ReadUInt( 4 )

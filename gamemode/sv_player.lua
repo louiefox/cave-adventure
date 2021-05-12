@@ -29,8 +29,24 @@ function player_meta:SendSoundEffect( soundEffect )
 end
 
 function player_meta:TeleportToSpawn()
+    self:AddTeleportTransition()
     self:SetPos( Vector( 0, 0, -3000 ) )
     self:SetEyeAngles( Angle( 0, 90, 0 ) )
+end
+
+util.AddNetworkString( "CaveAdventure.SendTeleportTransition" )
+function player_meta:AddTeleportTransition()
+    self:Freeze( true )
+    
+    local endTime = CurTime()+CAVEADVENTURE.DEVCONFIG.TransitionTime
+    timer.Simple( endTime-CurTime(), function()
+        if( not IsValid( self ) ) then return end
+        self:Freeze( false )
+    end )
+
+    net.Start( "CaveAdventure.SendTeleportTransition" )
+        net.WriteUInt( endTime, 32 )
+    net.Send( self )
 end
 
 -- CAVE FUNCTIONS --
@@ -53,17 +69,18 @@ function player_meta:SetActiveCave( caveKey )
     net.Send( self )
 end
 
-util.AddNetworkString( "CaveAdventure.SendStartCave" )
+util.AddNetworkString( "CaveAdventure.SendJoinCave" )
 function player_meta:AddToCave( caveKey )
     local cave = CAVEADVENTURE.TEMP.Caves[caveKey]
     if( not cave ) then return end
 
     self:SetActiveCave( caveKey )
 
-    net.Start( "CaveAdventure.SendStartCave" )
+    net.Start( "CaveAdventure.SendJoinCave" )
         net.WriteUInt( caveKey, 4 )
     net.Send( self )
 
+    self:AddTeleportTransition()
     self:TeleportToCave( caveKey )
 end
 

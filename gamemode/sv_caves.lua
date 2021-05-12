@@ -11,3 +11,5 @@ hook.Add( "OnNPCKilled", "CaveAdventure.OnNPCKilled.Caves", function( npc, attac
     room.Completed = true
     room:OnCompleted()
 end )
+
+util.AddNetworkString( "CaveAdventure.SendCompletedCave" )
