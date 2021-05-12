@@ -63,6 +63,7 @@ function player_meta:SetActiveCave( caveKey )
     self.CAVEADVENTURE_ACTIVECAVE = caveKey
 
     net.Start( "CaveAdventure.SendActiveCave" )
+        net.WriteBool( caveKey != nil )
         if( caveKey ) then 
             net.WriteUInt( caveKey, 4 ) 
         end

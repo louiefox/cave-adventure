@@ -20,7 +20,11 @@ end )
 
 -- CAVE FUNCTIONS --
 net.Receive( "CaveAdventure.SendActiveCave", function()
-    CAVEADVENTURE_ACTIVECAVE = net.ReadUInt( 4 )
+    if( net.ReadBool() == true ) then
+        CAVEADVENTURE_ACTIVECAVE = net.ReadUInt( 4 )
+    else
+        CAVEADVENTURE_ACTIVECAVE = nil
+    end
 end )
 
 -- MONEY FUNCTIONS --
