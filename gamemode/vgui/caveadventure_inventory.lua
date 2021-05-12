@@ -30,6 +30,7 @@ function PANEL:Init()
     self.grid:SetSpaceX( self.slotSpacing )
     self.grid:SetSpaceY( self.slotSpacing )
 
+    self:SetStartCenter( ScrW()*0.75, ScrH()*0.75 )
     self:SetTargetSize( ScrW()*0.15, 0 )
 
     self:RefreshSlots()
@@ -38,7 +39,6 @@ function PANEL:Init()
     hook.Add( "CaveAdventure.Hooks.InventoryUpdated", self, self.RefreshItems )
     hook.Add( "CaveAdventure.Hooks.VendorToggled", self, self.UpdateCursor )
 
-    self:SetStartCenter( ScrW()*0.75, ScrH()*0.75 )
     self:Open()
 
     self.screenPanel = vgui.Create( "DPanel" )

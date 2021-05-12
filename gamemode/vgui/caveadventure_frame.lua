@@ -3,6 +3,7 @@ local PANEL = {}
 function PANEL:Init()
     self.header = ""
     self.IsDragging = false
+    self.CenterX, self.CenterY = 0, 0
 
     local CenterStartX, CenterStartY, CursorStartX, CursorStartY
 

@@ -1,13 +1,23 @@
 CAVEADVENTURE.TEMP.Caves = CAVEADVENTURE.TEMP.Caves or {}
 
+local function CreateBuilding( model, material, pos, angles )
+    local building = ents.Create( "cave_building" )
+    building:SetBuildingModel( model )
+    building:SetMaterial( material )
+    building:SetPos( pos )
+    if( angles ) then building:SetAngles( angles ) end
+    building:Spawn()
+
+    return building
+end
+
 local room_meta = {
     Remove = function( self )
         self.Floor:Remove()
         self.Ceiling:Remove()
-        if( IsValid( self.SpawnPortal ) ) then self.SpawnPortal:Remove() end
         
-        if( self.Monsters ) then
-            for k, v in ipairs( self.Monsters ) do
+        if( self.Entities ) then
+            for k, v in ipairs( self.Entities ) do
                 if( not IsValid( v ) ) then continue end
                 v:Remove()
             end
@@ -35,31 +45,11 @@ local room_meta = {
 
         wall:Remove()
 
-        local wallEnts = {}
-
-        local wall1 = ents.Create( "cave_building" )
-        wall1:SetBuildingModel( "models/hunter/plates/plate4x4.mdl" )
-        wall1:SetMaterial( "cave_adventure/rock_wall" )
-        wall1:SetPos( pos+right*166 )
-        wall1:SetAngles( angles )
-        wall1:Spawn()
-        wallEnts.Wall1 = wall1
-
-        local wall2 = ents.Create( "cave_building" )
-        wall2:SetBuildingModel( "models/hunter/plates/plate4x4.mdl" )
-        wall2:SetMaterial( "cave_adventure/rock_wall" )
-        wall2:SetPos( pos-right*166 )
-        wall2:SetAngles( angles )
-        wall2:Spawn()
-        wallEnts.Wall2 = wall2
-
-        local wall3 = ents.Create( "cave_building" )
-        wall3:SetBuildingModel( "models/hunter/plates/plate3x4.mdl" )
-        wall3:SetMaterial( "cave_adventure/rock_wall" )
-        wall3:SetPos( pos+Vector( 0, 0, 120 ) )
-        wall3:SetAngles( angles+Angle( 90, 0, 0 ) )
-        wall3:Spawn()
-        wallEnts.Wall3 = wall3
+        local wallEnts = {
+            Wall1 = CreateBuilding( "models/hunter/plates/plate4x4.mdl", "cave_adventure/rock_wall", pos+right*166, angles ),
+            Wall2 = CreateBuilding( "models/hunter/plates/plate4x4.mdl", "cave_adventure/rock_wall", pos-right*166, angles ),
+            Wall3 = CreateBuilding( "models/hunter/plates/plate3x4.mdl", "cave_adventure/rock_wall", pos+Vector( 0, 0, 120 ), angles+Angle( 90, 0, 0 ) )
+        }
 
         if( not noDoor ) then
             local door = ents.Create( "cave_door" )
@@ -118,10 +108,21 @@ local room_meta = {
         zombie:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
         zombie:SetInitMonsterClass( "zombie" )
         zombie:Spawn()
+        zombie.CaveKey = self.Cave.CaveKey
+        zombie.RoomKey = self.RoomKey
 
-        self.Monsters = {
-            zombie
-        }
+        table.insert( self.Entities, monster )
+    end,
+    OnCompleted = function( self )
+        local chest = ents.Create( "caveadventure_chest" )
+        chest:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
+        chest:Spawn()
+        local chest2 = ents.Create( "caveadventure_chest" )
+        chest2:SetPos( self.Floor:GetPos()+Vector( 100, 0, 10 ) )
+        chest2:Spawn()
+
+        table.insert( self.Entities, chest )
+        table.insert( self.Entities, chest2 )
     end
 }
 
@@ -180,9 +181,12 @@ local grid_meta = {
     AddRoom = function( self, xCordinate, yCordinate, spawnRoom )
         if( self:RoomExists( xCordinate, yCordinate ) ) then return end
 
+        local roomKey =self:CoordinatesToKey( xCordinate, yCordinate )
+
         local room = {
             Cave = self,
-            Walls = {},
+            RoomKey = roomKey,
+            Entities = {},
             x = xCordinate,
             y = yCordinate,
             SpawnRoom = spawnRoom
@@ -190,61 +194,26 @@ local grid_meta = {
 
         local pos = self:GetRoomPos( xCordinate, yCordinate )
 
-        local floor = ents.Create( "cave_building" )
-        floor:SetBuildingModel( "models/hunter/plates/plate8x8.mdl" )
-        floor:SetMaterial( "cave_adventure/stone_floor" )
-        floor:SetPos( pos )
-        floor:Spawn()
-        room.Floor = floor
+        room.Floor = CreateBuilding( "models/hunter/plates/plate8x8.mdl", "cave_adventure/stone_floor", pos )
 
-        local wall1 = ents.Create( "cave_building" )
-        wall1:SetBuildingModel( "models/hunter/plates/plate4x8.mdl" )
-        wall1:SetMaterial( "cave_adventure/rock_wall" )
-        wall1:SetPos( pos+Vector( -self.RoomSize/2, 0, 95 ) )
-        wall1:SetAngles( Angle( 90, 90, 90 ) )
-        wall1:Spawn()
-        room.Walls[1] = wall1
+        room.Walls = {
+            CreateBuilding( "models/hunter/plates/plate4x8.mdl", "cave_adventure/rock_wall", pos+Vector( -self.RoomSize/2, 0, 95 ), Angle( 90, 90, 90 ) ),
+            CreateBuilding( "models/hunter/plates/plate4x8.mdl", "cave_adventure/rock_wall", pos+Vector( 0, self.RoomSize/2, 95 ), Angle( 90, 0, 90 ) ),
+            CreateBuilding( "models/hunter/plates/plate4x8.mdl", "cave_adventure/rock_wall", pos+Vector( self.RoomSize/2, 0, 95 ), Angle( 90, 90, 90 ) ),
+            CreateBuilding( "models/hunter/plates/plate4x8.mdl", "cave_adventure/rock_wall", pos+Vector( 0, -self.RoomSize/2, 95 ), Angle( 90, 0, 90 ) )
+        }
 
-        local wall2 = ents.Create( "cave_building" )
-        wall2:SetBuildingModel( "models/hunter/plates/plate4x8.mdl" )
-        wall2:SetMaterial( "cave_adventure/rock_wall" )
-        wall2:SetPos( pos+Vector( 0, self.RoomSize/2, 95 ) )
-        wall2:SetAngles( Angle( 90, 0, 90 ) )
-        wall2:Spawn()
-        room.Walls[2] = wall2
-
-        local wall3 = ents.Create( "cave_building" )
-        wall3:SetBuildingModel( "models/hunter/plates/plate4x8.mdl" )
-        wall3:SetMaterial( "cave_adventure/rock_wall" )
-        wall3:SetPos( pos+Vector( self.RoomSize/2, 0, 95 ) )
-        wall3:SetAngles( Angle( 90, 90, 90 ) )
-        wall3:Spawn()
-        room.Walls[3] = wall3
-
-        local wall4 = ents.Create( "cave_building" )
-        wall4:SetBuildingModel( "models/hunter/plates/plate4x8.mdl" )
-        wall4:SetMaterial( "cave_adventure/rock_wall" )
-        wall4:SetPos( pos+Vector( 0, -self.RoomSize/2, 95 ) )
-        wall4:SetAngles( Angle( 90, 0, 90 ) )
-        wall4:Spawn()
-        room.Walls[4] = wall4
-
-        local ceiling = ents.Create( "cave_building" )
-        ceiling:SetBuildingModel( "models/hunter/plates/plate8x8.mdl" )
-        ceiling:SetMaterial( "cave_adventure/rock_wall" )
-        ceiling:SetPos( pos+Vector( 0, 0, 167.5 ) )
-        ceiling:Spawn()
-        room.Ceiling = ceiling
+        room.Ceiling = CreateBuilding( "models/hunter/plates/plate8x8.mdl", "cave_adventure/rock_wall", pos+Vector( 0, 0, 167.5 ) )
 
         if( spawnRoom ) then
             local portal = ents.Create( "caveadventure_spawnportal" )
             portal:SetPos( pos+Vector( 0, -150, 50 ) )
             portal:Spawn()
-            room.SpawnPortal = portal
+            table.insert( room.Entities, portal )
         end
     
         setmetatable( room, room_meta )
-        self.Rooms[self:CoordinatesToKey( xCordinate, yCordinate )] = room
+        self.Rooms[roomKey] = room
 
         return room
     end,
@@ -280,37 +249,13 @@ local grid_meta = {
             end
         end
 
-        local floor = ents.Create( "cave_building" )
-        floor:SetBuildingModel( "models/hunter/plates/plate3x8.mdl" )
-        floor:SetMaterial( "cave_adventure/stone_floor" )
-        floor:SetPos( corridorPos )
-        floor:SetAngles( Angle( 0, corridorDir, 0 ) )
-        floor:Spawn()
+        local floor = CreateBuilding( "models/hunter/plates/plate3x8.mdl", "cave_adventure/stone_floor", corridorPos, Angle( 0, corridorDir, 0 ) )
         table.insert( self.CorridorEnts, floor )
 
-        local wall1 = ents.Create( "cave_building" )
-        wall1:SetBuildingModel( "models/hunter/plates/plate3x8.mdl" )
-        wall1:SetMaterial( "cave_adventure/rock_wall" )
-        wall1:SetPos( floor:GetPos()+floor:GetForward()*72.6+floor:GetUp()*72 )
-        wall1:SetAngles( floor:GetAngles()+Angle( 90, 0, 0 ) )
-        wall1:Spawn()
-        table.insert( self.CorridorEnts, wall1 )
+        table.insert( self.CorridorEnts, CreateBuilding( "models/hunter/plates/plate3x8.mdl", "cave_adventure/rock_wall", floor:GetPos()+floor:GetForward()*72.6+floor:GetUp()*72, floor:GetAngles()+Angle( 90, 0, 0 ) ) ) -- Wall 1
+        table.insert( self.CorridorEnts, CreateBuilding( "models/hunter/plates/plate3x8.mdl", "cave_adventure/rock_wall", floor:GetPos()-floor:GetForward()*72.6+floor:GetUp()*72, floor:GetAngles()+Angle( 90, 0, 0 ) ) ) -- Wall 2
 
-        local wall2 = ents.Create( "cave_building" )
-        wall2:SetBuildingModel( "models/hunter/plates/plate3x8.mdl" )
-        wall2:SetMaterial( "cave_adventure/rock_wall" )
-        wall2:SetPos( floor:GetPos()-floor:GetForward()*72.6+floor:GetUp()*72 )
-        wall2:SetAngles( floor:GetAngles()+Angle( 90, 0, 0 ) )
-        wall2:Spawn()
-        table.insert( self.CorridorEnts, wall2 )
-
-        local ceiling = ents.Create( "cave_building" )
-        ceiling:SetBuildingModel( "models/hunter/plates/plate3x8.mdl" )
-        ceiling:SetMaterial( "cave_adventure/rock_wall" )
-        ceiling:SetPos( floor:GetPos()+floor:GetUp()*121.6 )
-        ceiling:SetAngles( floor:GetAngles() )
-        ceiling:Spawn()
-        table.insert( self.CorridorEnts, ceiling )
+        table.insert( self.CorridorEnts, CreateBuilding( "models/hunter/plates/plate3x8.mdl", "cave_adventure/rock_wall", floor:GetPos()+floor:GetUp()*121.6, floor:GetAngles() ) ) -- Ceiling
     end,
     AddPlayer = function( self, ply )
         self.Players[ply] = true
@@ -328,9 +273,7 @@ local grid_meta = {
     end,
     CanOpenDoor = function( self )
         for k, v in pairs( self.Rooms ) do
-            for key, val in pairs( v.Monsters or {} ) do
-                if( IsValid( val ) ) then return false end
-            end
+            if( not v.SpawnRoom and not v.Completed ) then return false end
         end
 
         return true
