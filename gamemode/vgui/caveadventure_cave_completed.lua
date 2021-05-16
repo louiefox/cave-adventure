@@ -25,7 +25,7 @@ function PANEL:SetInfo( caveKey, deleteTime )
     self:SetTall( targetH )
     self:SizeTo( targetW, targetH, 0.2 )
 
-    surface.PlaySound( "cave_adventure/cave_start.wav" )
+    surface.PlaySound( "cave_adventure/cave_complete.wav" )
 end
 
 function PANEL:OnSizeChanged( w, h )

@@ -29,5 +29,9 @@ function ENT:Use()
 
 	self.Cave:ConnectRooms( room.x, room.y, x, y )
 
+	for ply, v in pairs( self.Cave.Players ) do
+		ply:SendSoundEffect( "cave_adventure/door_unlock.wav" )
+	end
+
 	self:Remove()
 end

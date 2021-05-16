@@ -1,6 +1,8 @@
 include( "shared.lua" )
 
 function ENT:Draw()
+	if( self.Looted ) then return end
+
 	if( not IsValid( self.clientsideModel ) ) then
 		self.clientsideModel = ClientsideModel( "models/cave_adventure/treasurechest/treasurechest.mdl" )
 		return
@@ -93,4 +95,42 @@ hook.Add( "KeyPress", "CaveAdventure.KeyPress.PickupChest", function( ply, key )
 			net.WriteEntity( ent )
 		net.SendToServer()
 	end
+end )
+
+net.Receive( "CaveAdventure.Net.SendChestLoot", function()
+	local ent = net.ReadEntity()
+	if( not IsValid( ent ) ) then return end
+
+	ent.Looted = true
+	if( IsValid( ent.clientsideModel ) ) then ent.clientsideModel:Remove() end
+	CAVEADVENTURE.TEMP.Chests[ent] = nil
+
+	surface.PlaySound( "cave_adventure/chest_loot.wav" )
+
+	local pos = ent:GetPos()
+	local rarity = ent:GetRarity()
+
+	local rarityCfg = CAVEADVENTURE.CONFIG.Rarities[rarity or "common"]
+	local col = rarityCfg[3]
+
+	local emitter = ParticleEmitter( pos ) -- Particle emitter in this position
+
+	for i = 0, 100 do -- Do 100 particles
+		local part = emitter:Add( "effects/spark", pos ) -- Create a new particle at pos
+		if ( part ) then
+			part:SetColor( col.r, col.g, col.b )
+			part:SetDieTime( 1 ) -- How long the particle should "live"
+
+			part:SetStartAlpha( 255 ) -- Starting alpha of the particle
+			part:SetEndAlpha( 0 ) -- Particle size at the end if its lifetime
+
+			part:SetStartSize( 5 ) -- Starting size
+			part:SetEndSize( 0 ) -- Size when removed
+
+			part:SetGravity( Vector( 0, 0, 250 ) ) -- Gravity of the particle
+			part:SetVelocity( VectorRand() * 100 ) -- Initial velocity of the particle
+		end
+	end
+
+	emitter:Finish()
 end )

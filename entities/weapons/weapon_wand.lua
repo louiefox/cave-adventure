@@ -49,6 +49,8 @@ function SWEP:PrimaryAttack()
     fireball:SetAttacker( ply )
     fireball:SetInflictor( self )
     fireball:Spawn()
+
+    ply:SendSoundEffect( "cave_adventure/spell_colorful.wav" )
 end
 
 function SWEP:SecondaryAttack()

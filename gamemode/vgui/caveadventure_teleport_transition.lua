@@ -7,7 +7,7 @@ end
 function PANEL:SetEndTime( endTime )
     self.endTime = endTime
 
-    surface.PlaySound( "cave_adventure/cave_start.wav" )
+    surface.PlaySound( "cave_adventure/teleport.wav" )
 end
 
 function PANEL:Think()
