@@ -1,15 +1,21 @@
 -- MOB CONFIG --
 CAVEADVENTURE.CONFIG.Monsters = {
-    ["zombie"] = {
-        Name = "Zombie",
+    ["undead"] = {
+        Name = "Undead",
         Level = 1,
-        Model = "models/Zombie/Classic.mdl",
-        Class = "botched_monster_zombie",
-        Health = 100,
-        Locations = {
-            Vector( -3106, -3618, -2962 ),
-            Vector( -2470, -5998, -2981 )
-        },
-        PlayerEXP = 10
+        Class = "cave_monster_undead",
+        Health = 100
+    },
+    ["undead_scout"] = {
+        Name = "Undead Scout",
+        Level = 3,
+        Class = "cave_monster_undead_scout",
+        Health = 100
+    },
+    ["undead_mage"] = {
+        Name = "Undead Mage",
+        Level = 5,
+        Class = "cave_monster_undead_mage",
+        Health = 150
     }
 }

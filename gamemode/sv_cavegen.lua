@@ -22,6 +22,13 @@ local room_meta = {
                 v:Remove()
             end
         end
+        
+        if( self.Monsters ) then
+            for k, v in ipairs( self.Monsters ) do
+                if( not IsValid( k ) ) then continue end
+                k:Remove()
+            end
+        end
 
         for k, v in ipairs( self.Walls ) do
             if( not IsValid( v ) ) then
@@ -104,14 +111,24 @@ local room_meta = {
 
         self.NavArea = navmesh.CreateNavArea( self.Floor:GetPos()+Vector( self.Cave.RoomSize/2, self.Cave.RoomSize/2, 0 ), self.Floor:GetPos()-Vector( self.Cave.RoomSize/2, self.Cave.RoomSize/2, 0 ) )
 
-        local zombie = ents.Create( "cave_monster_zombie" )
-        zombie:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
-        zombie:SetInitMonsterClass( "zombie" )
-        zombie:Spawn()
-        zombie.CaveKey = self.Cave.CaveKey
-        zombie.RoomKey = self.RoomKey
+        local caveKey = self.Cave.CaveKey
+        local caveCfg = CAVEADVENTURE.CONFIG.Caves[caveKey]
+        local roomCfg = caveCfg.Rooms[self.RoomCfgKey]
+        local layoutCfg = table.Random( roomCfg.Layouts )
 
-        table.insert( self.Entities, zombie )
+        self.Monsters = {}
+        for k, v in ipairs( layoutCfg.Monsters ) do
+            local monsterCfg = CAVEADVENTURE.CONFIG.Monsters[v[1]]
+
+            local monster = ents.Create( monsterCfg.Class )
+            monster:SetPos( self.Floor:GetPos()+v[2] )
+            monster:SetInitMonsterClass( v[1] )
+            monster.CaveKey = caveKey
+            monster.RoomKey = self.RoomKey
+            monster:Spawn()
+
+            self.Monsters[monster] = true
+        end
     end,
     OnCompleted = function( self )
         local caveCfg = CAVEADVENTURE.CONFIG.Caves[self.Cave.CaveKey]

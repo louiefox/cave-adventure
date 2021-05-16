@@ -15,5 +15,5 @@ function ENT:Initialize()
 	self.DeathSound = table.Random( { "npc/zombie/zombie_die1.wav", "npc/zombie/zombie_die2.wav", "npc/zombie/zombie_die3.wav" } )
 	self.MeleeSound = "npc/zombie/zombie_hit.wav"
 	self.MeleeDamage = { 5, 10 }
-	self.SpeedMultiplier = 0.5
+	self.SpeedMultiplier = 0.1
 end

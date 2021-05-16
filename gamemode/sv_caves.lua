@@ -8,8 +8,12 @@ hook.Add( "OnNPCKilled", "CaveAdventure.OnNPCKilled.Caves", function( npc, attac
     local room = cave.Rooms[roomKey]
     if( not room ) then return end
 
-    room.Completed = true
-    room:OnCompleted()
+    room.Monsters[npc] = nil
+
+    if( table.Count( room.Monsters ) <= 0 ) then
+        room.Completed = true
+        room:OnCompleted()
+    end
 end )
 
 util.AddNetworkString( "CaveAdventure.SendCompletedCave" )

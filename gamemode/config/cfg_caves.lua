@@ -13,6 +13,28 @@ CAVEADVENTURE.CONFIG.Caves = {
                 ChestRarities = {
                     ["common"] = 80,
                     ["uncommon"] = 20
+                },
+                Layouts = {
+                    {
+                        Monsters = {
+                            { "undead", Vector( 0, 0, 10 ) },
+                            { "undead_mage", Vector( 50, 0, 10 ) },
+                            { "undead_mage", Vector( -50, 0, 10 ) }
+                        }
+                    },
+                    {
+                        Monsters = {
+                            { "undead_scout", Vector( -20, 0, 10 ) },
+                            { "undead_scout", Vector( 20, 0, 10 ) }
+                        }
+                    },
+                    {
+                        Monsters = {
+                            { "undead", Vector( -40, 0, 10 ) },
+                            { "undead", Vector( 0, 0, 10 ) },
+                            { "undead", Vector( 40, 0, 10 ) }
+                        }
+                    }
                 }
             },
             {
@@ -20,6 +42,15 @@ CAVEADVENTURE.CONFIG.Caves = {
                 ChestRarities = {
                     ["uncommon"] = 80,
                     ["rare"] = 20
+                },
+                Layouts = {
+                    {
+                        Monsters = {
+                            { "undead_mage", Vector( 0, 0, 10 ) },
+                            { "undead_mage", Vector( 50, 0, 10 ) },
+                            { "undead_mage", Vector( -50, 0, 10 ) }
+                        }
+                    }
                 }
             }
         }

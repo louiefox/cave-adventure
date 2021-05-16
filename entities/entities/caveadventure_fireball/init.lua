@@ -48,12 +48,19 @@ function ENT:SetInflictor( inflictor )
 	self.Inflictor = inflictor
 end
 
+util.AddNetworkString( "CaveAdventure.Net.SendFireballHit" )
 function ENT:Touch( ent )
 	if( ent:IsPlayer() ) then return end
-	self:EmitSound( "ambient/explosions/explode_4.wav", 65 )
-	self:Remove()
+
+	net.Start( "CaveAdventure.Net.SendFireballHit" )
+		net.WriteEntity( self )
+		net.WriteBool( ent.IsMonster )
+	net.Broadcast()
 
 	if( ent.IsMonster ) then
-		ent:TakeDamage( 50, self.Attacker, self.Inflictor )
+		ent:TakeDamage( 500, self.Attacker, self.Inflictor )
 	end
+
+	self:EmitSound( "ambient/explosions/explode_4.wav", 65 )
+	self:Remove()
 end
