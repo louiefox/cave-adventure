@@ -27,3 +27,12 @@ end
 function player_meta:GetInvSlots()
     return 30
 end
+
+-- HEALTH FUNCTIONS --
+function player_meta:IsHealthRegenerating()
+	if( CLIENT ) then
+		return CAVEADVENTURE_HEALTHREGEN
+	else
+		return self.CAVEADVENTURE_HEALTHREGEN
+	end
+end

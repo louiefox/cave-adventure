@@ -57,3 +57,12 @@ net.Receive( "CaveAdventure.SendInventoryItems", function()
 
     hook.Run( "CaveAdventure.Hooks.InventoryUpdated" )
 end )
+
+-- HEALTH FUNCTIONS --
+net.Receive( "CaveAdventure.SendHealthRegenStart", function()
+    CAVEADVENTURE_HEALTHREGEN = { net.ReadUInt( 32 ), net.ReadUInt( 8 ) }
+end )
+
+net.Receive( "CaveAdventure.SendHealthRegenStop", function()
+    CAVEADVENTURE_HEALTHREGEN = nil
+end )

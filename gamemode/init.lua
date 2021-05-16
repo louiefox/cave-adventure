@@ -139,3 +139,32 @@ hook.Add( "InitPostEntity", "CaveAdventure.InitPostEntity", function()
 
     CAVEADVENTURE.FUNC.SpawnPortals()
 end )
+
+hook.Add( "EntityTakeDamage", "CaveAdventure.EntityTakeDamage.HealthRegen", function( target, dmginfo )
+	if( not target:IsPlayer() ) then return end
+
+    if( target:IsHealthRegenerating() ) then
+        target:StopHealthRegen()
+    end
+
+    local timerID = "CaveAdventure.Timers.RegenStart." .. target:SteamID64()
+    if( timer.Exists( timerID ) ) then
+        timer.Remove( timerID )
+    end
+
+    timer.Create( timerID, 3, 1, function()
+        if( not IsValid( target ) ) then return end
+
+        target:StartHealthRegen()
+    end )
+end )
+
+hook.Add( "Think", "CaveAdventure.Think.HealthRegen", function()
+    local curTime = CurTime()
+    for k, v in ipairs( player.GetAll() ) do
+        local regenData = v.CAVEADVENTURE_HEALTHREGEN
+        if( not regenData or curTime < regenData[1]+regenData[2] ) then continue end
+
+        v:StopHealthRegen()
+    end
+end )

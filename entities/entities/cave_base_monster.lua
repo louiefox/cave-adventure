@@ -186,3 +186,13 @@ function ENT:OnKilled( dmginfo )
 	self:StopSound( self.PassiveSound or "" )
 	self:Remove()
 end
+
+function ENT:OnTakeDamage( dmginfo )
+	self.LastDamage = CurTime()
+end
+
+function ENT:Think()
+	if( self:Health() < self:GetMaxHealth() and CurTime() >= (self.LastDamage or 0)+30 ) then
+		self:SetHealth( self:GetMaxHealth() )
+	end
+end

@@ -35,7 +35,19 @@ hook.Add( "HUDPaint", "CaveAdventure.HUDPaint.HUD", function()
     local spacing = CAVEADVENTURE.FUNC.ScreenScale( 75 )
     local borderSpace = 5
 
-    healthLerp = Lerp( RealFrameTime()*2, healthLerp, ply:Health() )
+    local targetHealth
+    local health, maxHealth = ply:Health(), ply:GetMaxHealth()
+
+    local regenData = CAVEADVENTURE_HEALTHREGEN
+    if( regenData ) then
+        local regenPercent = math.Clamp( (CurTime()-regenData[1])/regenData[2], 0, 1 )
+
+        targetHealth = math.Clamp( health+(regenPercent*(maxHealth-health)), 1, maxHealth ) 
+    else
+        targetHealth = health
+    end
+
+    healthLerp = Lerp( RealFrameTime()*2, healthLerp, targetHealth )
 
     surface.SetMaterial( rounded_bar )
 
@@ -48,10 +60,10 @@ hook.Add( "HUDPaint", "CaveAdventure.HUDPaint.HUD", function()
         surface.DrawTexturedRect( spacing+borderSpace, ScrH()-spacing-h+borderSpace, w-(2*borderSpace), h-(2*borderSpace) )
     end, function()
         surface.SetDrawColor( 255, 100, 100 )
-        surface.DrawRect( spacing+borderSpace, ScrH()-spacing-h+borderSpace, (w-(2*borderSpace))*math.Clamp( healthLerp/ply:GetMaxHealth(), 0, 1 ), h-(2*borderSpace) )
+        surface.DrawRect( spacing+borderSpace, ScrH()-spacing-h+borderSpace, (w-(2*borderSpace))*math.Clamp( healthLerp/maxHealth, 0, 1 ), h-(2*borderSpace) )
 
         surface.SetDrawColor( 224, 61, 61 )
-        surface.DrawRect( spacing+borderSpace, ScrH()-spacing-h+borderSpace, (w-(2*borderSpace))*math.Clamp( ply:Health()/ply:GetMaxHealth(), 0, 1 ), h-(2*borderSpace) )
+        surface.DrawRect( spacing+borderSpace, ScrH()-spacing-h+borderSpace, (w-(2*borderSpace))*math.Clamp( targetHealth/maxHealth, 0, 1 ), h-(2*borderSpace) )
     end )
 
     -- BIND HUD --

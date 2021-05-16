@@ -205,33 +205,29 @@ function player_meta:AddInventoryItems( ... )
     self:SaveInventorySlotsToDB( slotsChanged )
 end
 
--- function player_meta:TakeInventoryItems( ... )
---     local itemsToTake = { ... }
+-- HEALTH FUNCTIONS --
+util.AddNetworkString( "CaveAdventure.SendHealthRegenStart" )
+function player_meta:StartHealthRegen()
+    local startTime, duration = CurTime(), 5
+    self.CAVEADVENTURE_HEALTHREGEN = { startTime, duration }
 
---     local itemsTaken = {}
---     local inventory = self:GetInventory()
---     for k, v in ipairs( itemsToTake ) do
---         if( k % 2 == 0 or not CAVEADVENTURE.CONFIG.Items[v] ) then continue end
+    net.Start( "CaveAdventure.SendHealthRegenStart" )
+        net.WriteUInt( startTime, 32 )
+        net.WriteUInt( duration, 8 )
+    net.Send( self )
+end
 
---         local newAmount = (inventory[v] or 0)-(itemsToTake[k+1] or 1)
+util.AddNetworkString( "CaveAdventure.SendHealthRegenStop" )
+function player_meta:StopHealthRegen()
+    local regenData = self.CAVEADVENTURE_HEALTHREGEN
 
---         if( newAmount > 0 ) then
---             inventory[v] = newAmount
---         else
---             inventory[v] = nil
---         end
+    local regenPercent = math.Clamp( (CurTime()-regenData[1])/regenData[2], 0, 1 )
+    local health, maxHealth = self:Health(), self:GetMaxHealth()
 
---         if( newAmount > 0 ) then
---             --CAVEADVENTURE.FUNC.SQLQuery( "INSERT OR REPLACE INTO botched_inventory( userID, itemKey, amount ) VALUES(" .. self:GetUserID() .. ", '" .. v .. "'," .. newAmount .. ");" )
---         else
---             --CAVEADVENTURE.FUNC.SQLQuery( "DELETE FROM botched_inventory WHERE userID = '" .. self:GetUserID() .. "' AND itemKey = '" .. v .. "';" )
---         end
+    self:SetHealth( math.Clamp( health+(regenPercent*(maxHealth-health)), 1, maxHealth ) )
 
---         itemsTaken[v] = newAmount
---     end
+    self.CAVEADVENTURE_HEALTHREGEN = nil
 
---     if( table.Count( itemsTaken ) < 1 ) then return end
-
---     self.CAVEADVENTURE_INVENTORY = inventory
---     self:SendInventoryItems( itemsTaken )
--- end
+    net.Start( "CaveAdventure.SendHealthRegenStop" )
+    net.Send( self )
+end

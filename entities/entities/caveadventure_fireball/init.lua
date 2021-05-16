@@ -58,7 +58,7 @@ function ENT:Touch( ent )
 	net.Broadcast()
 
 	if( ent.IsMonster ) then
-		ent:TakeDamage( 500, self.Attacker, self.Inflictor )
+		ent:TakeDamage( 25, self.Attacker, self.Inflictor )
 	end
 
 	self:EmitSound( "ambient/explosions/explode_4.wav", 65 )
