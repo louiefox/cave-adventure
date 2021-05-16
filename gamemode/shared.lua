@@ -65,3 +65,13 @@ function CAVEADVENTURE.FUNC.FormatMoneyText( money )
 
     return moneyString
 end
+
+function CAVEADVENTURE.FUNC.GetRandomRarity( rarityCfg )
+    local randomNum = math.random( 0, 100 )
+    local previousChance = 0
+
+    for k, v in pairs( rarityCfg ) do
+        if( randomNum < previousChance+v ) then return k end
+        previousChance = previousChance+v
+    end
+end

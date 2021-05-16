@@ -111,12 +111,16 @@ local room_meta = {
         zombie.CaveKey = self.Cave.CaveKey
         zombie.RoomKey = self.RoomKey
 
-        table.insert( self.Entities, monster )
+        table.insert( self.Entities, zombie )
     end,
     OnCompleted = function( self )
+        local caveCfg = CAVEADVENTURE.CONFIG.Caves[self.Cave.CaveKey]
+        local roomCfg = caveCfg.Rooms[self.RoomCfgKey]
+
         local chest = ents.Create( "caveadventure_chest" )
         chest:SetPos( self.Floor:GetPos()+Vector( 0, 0, 10 ) )
         chest:SetRewardPlayers( table.Copy( self.Cave.Players ) )
+        chest:SetRarity( CAVEADVENTURE.FUNC.GetRandomRarity( roomCfg.ChestRarities ) )
         chest:Spawn()
 
         table.insert( self.Entities, chest )
@@ -203,7 +207,7 @@ local grid_meta = {
     AddRoom = function( self, xCordinate, yCordinate, spawnRoom )
         if( self:RoomExists( xCordinate, yCordinate ) ) then return end
 
-        local roomKey =self:CoordinatesToKey( xCordinate, yCordinate )
+        local roomKey = self:CoordinatesToKey( xCordinate, yCordinate )
 
         local room = {
             Cave = self,
@@ -211,7 +215,8 @@ local grid_meta = {
             Entities = {},
             x = xCordinate,
             y = yCordinate,
-            SpawnRoom = spawnRoom
+            SpawnRoom = spawnRoom,
+            RoomCfgKey = not spawnRoom and self:GetNextRoomCfg()
         }
 
         local pos = self:GetRoomPos( xCordinate, yCordinate )
@@ -298,6 +303,18 @@ local grid_meta = {
         end
 
         return true
+    end,
+    GetNextRoomCfg = function( self )
+        local caveCfg = CAVEADVENTURE.CONFIG.Caves[self.CaveKey]
+
+        local previousCount = 0
+        for k, v in ipairs( caveCfg.Rooms ) do
+            if( table.Count( self.Rooms )-1 < previousCount+v.Count ) then
+                return k
+            end
+
+            previousCount = previousCount+v.Count
+        end
     end
 }
 

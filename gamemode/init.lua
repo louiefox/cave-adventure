@@ -87,8 +87,7 @@ end
 
 function GM:PlayerLoadout( ply )
     ply:StripWeapons()
-    ply:Give( "weapon_357" )
-    ply:GiveAmmo( 200, "357", true )
+    ply:Give( "weapon_wand" )
 
 	return true
 end

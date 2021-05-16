@@ -6,7 +6,23 @@ CAVEADVENTURE.CONFIG.Caves = {
         Size = 3,
         StartPos = Vector( 0, 0, -1728 ),
         PortalPos = Vector( 200, -450, -2950 ),
-        PortalParticle = "[8]magic_portal*"
+        PortalParticle = "[8]magic_portal*",
+        Rooms = {
+            {
+                Count = 7,
+                ChestRarities = {
+                    ["common"] = 80,
+                    ["uncommon"] = 20
+                }
+            },
+            {
+                Count = 1,
+                ChestRarities = {
+                    ["uncommon"] = 80,
+                    ["rare"] = 20
+                }
+            }
+        }
     },
     [2] = {
         Name = "Storm Cave",

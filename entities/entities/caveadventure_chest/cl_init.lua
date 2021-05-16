@@ -2,7 +2,7 @@ include( "shared.lua" )
 
 function ENT:Draw()
 	if( not IsValid( self.clientsideModel ) ) then
-		self.clientsideModel = ClientsideModel( "models/treasurechest/treasurechest.mdl" )
+		self.clientsideModel = ClientsideModel( "models/cave_adventure/treasurechest/treasurechest.mdl" )
 		return
 	end
 
@@ -59,7 +59,7 @@ hook.Add( "HUDPaint", "CaveAdventure.HUDPaint.Chests", function()
 
 		local accentBorderH = 2
 
-		local rarityCfg = CAVEADVENTURE.CONFIG.Rarities["legendary"]
+		local rarityCfg = CAVEADVENTURE.CONFIG.Rarities[ent:GetRarity() or "common"]
 		local accent = rarityCfg[4]
 
 		surface.SetDrawColor( accent )
