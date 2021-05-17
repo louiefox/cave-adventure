@@ -13,12 +13,12 @@ SWEP.UseHands = true
 
 SWEP.Sound = Sound("physics/wood/wood_box_impact_hard3.wav")
 
-SWEP.Primary.DefaultClip = 0;
-SWEP.Primary.Automatic = true;
-SWEP.Primary.ClipSize = -1;
-SWEP.Primary.Damage = 1;
-SWEP.Primary.Delay = 1;
-SWEP.Primary.Ammo = "";
+SWEP.Primary.DefaultClip = 0
+SWEP.Primary.Automatic = false
+SWEP.Primary.ClipSize = -1
+SWEP.Primary.Damage = 1
+SWEP.Primary.Delay = 1
+SWEP.Primary.Ammo = ""
 
 function SWEP:Initialize()
 	self:SetHoldType( "melee" )

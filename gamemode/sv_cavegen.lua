@@ -259,6 +259,12 @@ local grid_meta = {
         setmetatable( room, room_meta )
         self.Rooms[roomKey] = room
 
+        if( not spawnRoom ) then
+            for k, v in pairs( self.Players ) do
+                k:SendCurrentCaveRoom( self.CaveKey, table.Count( self.Rooms )-1 )
+            end
+        end
+
         return room
     end,
     ConnectRooms = function( self, room1X, room1Y, room2X, room2Y )
@@ -304,6 +310,11 @@ local grid_meta = {
     AddPlayer = function( self, ply )
         self.Players[ply] = true
         ply:AddToCave( self.CaveKey )
+
+        for k, v in pairs( self.Players ) do
+            k:SendCavePlayer( self.CaveKey, false, ply )
+            ply:SendCavePlayer( self.CaveKey, false, k )
+        end
     end,
     RemovePlayer = function( self, ply )
         self.Players[ply] = nil
@@ -313,8 +324,14 @@ local grid_meta = {
         end
 
         ply:RemoveFromCave( self.CaveKey )
+
+        for k, v in pairs( self.Players ) do
+            k:SendCavePlayer( self.CaveKey, true, ply )
+        end
     end,
     CanOpenDoor = function( self )
+        if( CurTime() < (self.StartTime or 0) ) then return false end
+
         for k, v in pairs( self.Rooms ) do
             if( not v.SpawnRoom and not v.Completed ) then return false end
         end
@@ -352,7 +369,8 @@ function CAVEADVENTURE.FUNC.SpawnCave( caveKey )
         CorridorEnts = {},
         Players = {},
         RoomSize = 380,
-        RoomSpacing = 379
+        RoomSpacing = 379,
+        StartTime = CurTime()+10
     }
     
     setmetatable( newCave, grid_meta )

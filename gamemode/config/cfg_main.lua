@@ -10,6 +10,9 @@ CAVEADVENTURE.CONFIG.Themes.Silver = Color( 165, 165, 165 )
 CAVEADVENTURE.CONFIG.Themes.Gold = Color( 222, 175, 7 )
 CAVEADVENTURE.CONFIG.Themes.Diamond = Color( 0, 255, 233 )
 
+CAVEADVENTURE.CONFIG.Themes.Green = Color( 46, 204, 113 )
+CAVEADVENTURE.CONFIG.Themes.DarkGreen = Color( 39, 174, 96 )
+
 CAVEADVENTURE.CONFIG.Themes.Red = Color( 231, 76, 60 )
 CAVEADVENTURE.CONFIG.Themes.DarkRed = Color( 192, 57, 43 )
 

@@ -4,6 +4,7 @@ CAVEADVENTURE.CONFIG.Caves = {
         Name = "Starter Cave",
         Level = 1,
         Size = 3,
+        MaxPlayers = 3,
         StartPos = Vector( 0, 0, -1728 ),
         PortalPos = Vector( 200, -450, -2950 ),
         PortalParticle = "[8]magic_portal*",

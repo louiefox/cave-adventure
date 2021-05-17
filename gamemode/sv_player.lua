@@ -79,6 +79,8 @@ function player_meta:AddToCave( caveKey )
 
     net.Start( "CaveAdventure.SendJoinCave" )
         net.WriteUInt( caveKey, 4 )
+        net.WriteUInt( cave.StartTime, 32 )
+        net.WriteUInt( table.Count( cave.Players ), 4 )
     net.Send( self )
 
     self:AddTeleportTransition()
@@ -89,6 +91,23 @@ function player_meta:RemoveFromCave( caveKey )
     self:SetActiveCave( nil )
 
     self:TeleportToSpawn()
+end
+
+util.AddNetworkString( "CaveAdventure.SendCavePlayer" )
+function player_meta:SendCavePlayer( caveKey, delete, player )
+    net.Start( "CaveAdventure.SendCavePlayer" )
+        net.WriteUInt( caveKey, 4 )
+        net.WriteBool( delete )
+        net.WriteEntity( player )
+    net.Send( self )
+end
+
+util.AddNetworkString( "CaveAdventure.SendCurrentCaveRoom" )
+function player_meta:SendCurrentCaveRoom( caveKey, room )
+    net.Start( "CaveAdventure.SendCurrentCaveRoom" )
+        net.WriteUInt( caveKey, 4 )
+        net.WriteUInt( room, 6 )
+    net.Send( self )
 end
 
 -- MONEY FUNCTIONS --

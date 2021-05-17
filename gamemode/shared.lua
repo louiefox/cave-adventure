@@ -71,7 +71,7 @@ function CAVEADVENTURE.FUNC.GetRandomRarity( rarityCfg )
     local previousChance = 0
 
     for k, v in pairs( rarityCfg ) do
-        if( randomNum < previousChance+v ) then return k end
+        if( randomNum <= previousChance+v ) then return k end
         previousChance = previousChance+v
     end
 end
