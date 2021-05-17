@@ -7,7 +7,8 @@ net.Receive( "CaveAdventure.SendJoinCave", function()
     CAVEADVENTURE.TEMP.CaveData = {
         StartTime = net.ReadUInt( 32 ),
         Players = {},
-        CurrentRoom = 0
+        CurrentRoom = 0,
+        Damage = 0
     }
 
     timer.Simple( CAVEADVENTURE.DEVCONFIG.TransitionTime, function()
@@ -50,6 +51,15 @@ net.Receive( "CaveAdventure.SendCurrentCaveRoom", function()
     if( (LocalPlayer():GetActiveCave() or 0) != caveKey or not CAVEADVENTURE.TEMP.CaveData ) then return end
 
     CAVEADVENTURE.TEMP.CaveData.CurrentRoom = room
+end )
+
+net.Receive( "CaveAdventure.SendCaveDamage", function()
+    local caveKey = net.ReadUInt( 4 )
+    local damage = net.ReadUInt( 16 )
+
+    if( (LocalPlayer():GetActiveCave() or 0) != caveKey or not CAVEADVENTURE.TEMP.CaveData ) then return end
+
+    CAVEADVENTURE.TEMP.CaveData.Damage = CAVEADVENTURE.TEMP.CaveData.Damage+damage
 end )
 
 local function GetTextH( text, font )
@@ -111,6 +121,18 @@ hook.Add( "HUDPaint", "CaveAdventure.HUDPaint.CaveStatus", function()
             Text = {
                 { caveData.CurrentRoom .. "/" .. (caveCfg.Size^2)-1, CAVEADVENTURE.FUNC.GetTheme( 4 ) },
                 { "Room: ", CAVEADVENTURE.FUNC.GetTheme( 3 ) }
+            }
+        } )
+
+        local dmgString = string.Comma( caveData.Damage )
+        if( caveData.Damage >= 1000 ) then
+            dmgString = math.Round( caveData.Damage/1000, 2 ) .. "K"
+        end
+
+        table.insert( stats, {
+            Text = {
+                { dmgString, CAVEADVENTURE.CONFIG.Themes.Red },
+                { "Damage: ", CAVEADVENTURE.FUNC.GetTheme( 3 ) }
             }
         } )
     end

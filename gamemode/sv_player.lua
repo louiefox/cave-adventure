@@ -110,6 +110,14 @@ function player_meta:SendCurrentCaveRoom( caveKey, room )
     net.Send( self )
 end
 
+util.AddNetworkString( "CaveAdventure.SendCaveDamage" )
+function player_meta:SendCaveDamage( caveKey, damage )
+    net.Start( "CaveAdventure.SendCaveDamage" )
+        net.WriteUInt( caveKey, 4 )
+        net.WriteUInt( damage, 16 )
+    net.Send( self )
+end
+
 -- MONEY FUNCTIONS --
 util.AddNetworkString( "CaveAdventure.SendMoney" )
 function player_meta:SetMoney( money )

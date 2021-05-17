@@ -16,4 +16,19 @@ hook.Add( "OnNPCKilled", "CaveAdventure.OnNPCKilled.Caves", function( npc, attac
     end
 end )
 
+hook.Add( "EntityTakeDamage", "CaveAdventure.EntityTakeDamage.Caves", function( target, dmgInfo ) 
+    if( not target.IsMonster ) then return end
+
+    local caveKey = target.CaveKey
+    if( not caveKey ) then return end
+
+    local cave = CAVEADVENTURE.TEMP.Caves[caveKey]
+    if( not cave ) then return end
+
+    local ply = dmgInfo:GetAttacker()
+    if( not IsValid( ply ) or not ply:IsPlayer() ) then return end
+
+    ply:SendCaveDamage( caveKey, math.Clamp( dmgInfo:GetDamage(), 0, target:Health() ) )
+end )
+
 util.AddNetworkString( "CaveAdventure.SendCompletedCave" )
