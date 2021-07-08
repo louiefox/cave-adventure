@@ -123,6 +123,7 @@ local room_meta = {
             local monster = ents.Create( monsterCfg.Class )
             monster:SetPos( self.Floor:GetPos()+v[2] )
             monster:SetInitMonsterClass( v[1] )
+            monster:SetCavePlayers( table.GetKeys( self.Cave.Players ) )
             monster.CaveKey = caveKey
             monster.RoomKey = self.RoomKey
             monster:Spawn()

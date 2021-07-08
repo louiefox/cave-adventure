@@ -32,3 +32,13 @@ hook.Add( "EntityTakeDamage", "CaveAdventure.EntityTakeDamage.Caves", function( 
 end )
 
 util.AddNetworkString( "CaveAdventure.SendCompletedCave" )
+
+concommand.Add( "cave_test_monster", function( ply )
+    local pos = ply:GetEyeTrace().HitPos
+
+    local monster = ents.Create( "cave_monster_undead" )
+    monster:SetPos( pos+Vector( 0, 0, 10 ) )
+    monster:SetInitMonsterClass( "undead" )
+    monster:SetCavePlayers( { ply } )
+    monster:Spawn()
+end )
